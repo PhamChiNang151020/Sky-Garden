@@ -1,2 +1,2 @@
 # Sky-Garden
-Trước mắt cứ sử dụng brand: dev/sky
+Tạo mỗi nhánh là 1 chức năng
