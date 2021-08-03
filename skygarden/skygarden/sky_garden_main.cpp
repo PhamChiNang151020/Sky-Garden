@@ -1,4 +1,4 @@
-
+﻿#include <Windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <GL/glut.h>
@@ -6,69 +6,79 @@
 #include <gl/GLU.h>
 #include <iostream>
 #include <math.h>
+#include <vector>
+#include <loadpng.h>
+#include <process_image.h>
+#include <gl\gl_texture.h>
+
 using namespace std;
-struct Point2D
-{
-	float x, y;
-};
-Point2D list[3];
-bool color = true;
-float pointsize = 3.0;
-void mouse(int button, int state,int x, int y){
-	switch(button)
-	{
-	case GLUT_LEFT_BUTTON:
-		if(state == GLUT_DOWN){
-			if(color)
-				glColor3f(1.0,0.0,0.0);
-			else
-				glColor3f(1.0,1.0,1.0);
-			glPointSize(pointsize);
-			glBegin(GL_POINTS);
-			glVertex2d(x,y);
-			glEnd();
-			glFlush();
-		}
-		break;
-	case GLUT_RIGHT_BUTTON:
-		if(state == GLUT_DOWN)
-			color = !color;
-	default:
-		break;
-	}
-}
-void moveMouse(int x, int y)
-{
-	glPointSize(pointsize);
-			glBegin(GL_POINTS);
-			glVertex2d(x,y);
-			glEnd();
-			glFlush();
-}
+
+#define WIDTH  1280
+#define HEIGHT  720
+#define INTERVAL 15
+
+Rect Rct_Background = {0, 1280,0, 720};
+Image Img_Background;
+
 void display(void)
 {
-	glClear(GL_COLOR_BUFFER_BIT);
-	glFlush();
+	glClear(GL_COLOR_BUFFER_BIT);// Xóa những thứ trước đó và vẽ lại
+	glLoadIdentity();// load hệ tọa độ
+
+
+	Map_Texture(&Img_Background);
+	Draw_Rect(&Rct_Background);
+
+	glutSwapBuffers(); // Dùng cho GL_DOUBLE 
 } 
+void init_Game(){
+	//Load Hình
+	Load_Texture_Swap(&Img_Background,"Images/bg-1280x720.png");
+}
 void init()
 {
+	// Thiết lập màu nền : Trắng
 	glClearColor(0.0, 0.0, 0.0, 0.0);	
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluOrtho2D(0, 1280, 720, 0);
+	glViewport(0,0,WIDTH,HEIGHT);
+	gluOrtho2D(0, WIDTH, 0, HEIGHT);
+	glMatrixMode(GL_MODELVIEW);
+	
+	//Bật chế độ vẽ ảnh 2D
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_LINE_SMOOTH);
+	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glEnable(GL_TEXTURE_2D);
+	init_Game();
+}
+
+void Timer(int value){
+	//Post lại display
+	glutPostRedisplay();
+	glutTimerFunc(INTERVAL,Timer,0);
 }
 int main(int argc, char** argv)
 {
-	
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-	glutInitWindowSize(1280, 720);
-	glutInitWindowPosition(0, 0);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+	 // lay kich thuoc man hinh tru cho cua so
+    int POS_X = (glutGet(GLUT_SCREEN_WIDTH)- WIDTH) >> 1;
+    int POS_Y = (glutGet(GLUT_SCREEN_HEIGHT)- HEIGHT) >> 1;
+    // Tao cua so ngay giua man hinh
+    glutInitWindowSize(WIDTH, HEIGHT);
+    glutInitWindowPosition(POS_X,POS_Y);
 	glutCreateWindow("My window");
-	glutDisplayFunc(display);
 	init();
-	glutMouseFunc(mouse);
-	glutMotionFunc(moveMouse);
+	init_Game();
+	glutDisplayFunc(display);
+
+	glutTimerFunc(0,Timer,0);
 	glutMainLoop();
 	return 0;
 }
