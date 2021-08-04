@@ -1,2 +1,1 @@
-# Sky-Garden
-Tạo mỗi nhánh là 1 chức năng
+Phong code cứ push lên nhánh này nha
