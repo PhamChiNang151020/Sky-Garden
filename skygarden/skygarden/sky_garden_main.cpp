@@ -21,25 +21,37 @@ using namespace std;
 // Trái Phải dưới trên
 Rect Rct_Background = {0, 1280, 720,0}, Rct_Ground = {200 , 300+200, 50+200 ,200  },bt1 = {200,300+200,50+400,400};
 
+int x_cloud = 1110;
+
 Rect BT_1={150,250+150,75+475,475}, //250x75
 	 BT_2={150,250+150,75+575,575},
 	 BT_3={880,250+880,75+475,475},
-	 BT_4={880,250+880,75+575,575};
+	 BT_4={880,250+880,75+575,575},
+	 filter_lock1={270,810+270,180,0},
+	 filter_lock2={270,810+270,180+180,180};
 
-Image Img_Background,
+Image Img_Background, Img_Background2,
 	  Img_Ground,
+	  Img_filter_lock,
 	  Img_Bt1, Img_Bt2, Img_Bt3, Img_Bt4;
+
+Image cloud;
 	 
 
 // Mỗi lần thêm hình thì vẽ khung cho nó
 
 void Init_game()
 {
-	Load_Texture_Swap(&Img_Background,"Images/bg1.png");
-	Load_Texture_Swap(&Img_Bt1,"Images/bt-NewGame.png");
+	Load_Texture_Swap(&Img_Background,"Images/bg2.png");
+
+	//load lớp phủ
+	Load_Texture_Swap(&Img_filter_lock,"Images/lopphu.png");
+
+	/*Load_Texture_Swap(&Img_Bt1,"Images/bt-NewGame.png");
 	Load_Texture_Swap(&Img_Bt2,"Images/bt-Continue.png");
 	Load_Texture_Swap(&Img_Bt3,"Images/bt-Help.png");
-	Load_Texture_Swap(&Img_Bt4,"Images/bt-Exit.png");
+	Load_Texture_Swap(&Img_Bt4,"Images/bt-Exit.png");*/
+
 }
 void display(void)
 {
@@ -48,20 +60,32 @@ void display(void)
 	
 	Map_Texture(&Img_Background);
 	Draw_Rect(&Rct_Background); // Dùng để load hình
-	/*Map_Texture(&Img_Ground);
-	Draw_Rect(&Rct_Ground);
-	Draw_Rect(&bt1);*/
-	Map_Texture(&Img_Bt1);
+	
+	/*Map_Texture(&Img_Bt1);
 	Draw_Rect(&BT_1);
 	Map_Texture(&Img_Bt2);
 	Draw_Rect(&BT_2);
 	Map_Texture(&Img_Bt3);
 	Draw_Rect(&BT_3);
 	Map_Texture(&Img_Bt4);
-	Draw_Rect(&BT_4);
+	Draw_Rect(&BT_4);*/
+
+	// load lớp phủ
+	Map_Texture(&Img_filter_lock);
+	Draw_Rect(&filter_lock1);
+	Draw_Rect(&filter_lock2);
+	
 
 	glutSwapBuffers();
 } 
+void timer(int)
+{
+	glutPostRedisplay();
+	glutTimerFunc(1000/10,timer,0);
+
+	if (x_cloud < 1280)
+		x_cloud += 100;
+}
 
 void init()
 {
@@ -105,7 +129,6 @@ int main(int argc, char** argv)
 	glutInitWindowSize(WIDTH, HEIGHT);
 	glutInitWindowPosition(POS_X,POS_Y);
 	glutCreateWindow("SKY GARDEN");
-
 	init();
 	glutDisplayFunc(display);
 	glutTimerFunc(0,Timer,0);
