@@ -1,0 +1,115 @@
+﻿#include <stdio.h>
+#include <stdlib.h>
+#include <GL/glut.h>
+#include <gl/GL.h>
+#include <gl/GLU.h>
+#include <iostream>
+#include <math.h>
+#include <vector>
+
+#include "../Lib/loadpng.h"
+#include "../Lib/process_image.h"
+#include "../Lib/gl_texture.h"
+
+using namespace std;
+
+//#define STB_IMAGE_IMPLEMENTATION
+#define WIDTH 1280
+#define HEIGHT 720
+// Dùng để gọi lại
+#define INTERVAL 15
+// Trái Phải dưới trên
+Rect Rct_Background = {0, 1280, 720,0}, Rct_Ground = {200 , 300+200, 50+200 ,200  },bt1 = {200,300+200,50+400,400};
+
+Rect BT_1={150,250+150,75+475,475}, //250x75
+	 BT_2={150,250+150,75+575,575},
+	 BT_3={880,250+880,75+475,475},
+	 BT_4={880,250+880,75+575,575};
+
+Image Img_Background,
+	  Img_Ground,
+	  Img_Bt1, Img_Bt2, Img_Bt3, Img_Bt4;
+	 
+
+// Mỗi lần thêm hình thì vẽ khung cho nó
+
+void Init_game()
+{
+	Load_Texture_Swap(&Img_Background,"Images/bg1.png");
+	Load_Texture_Swap(&Img_Bt1,"Images/bt-NewGame.png");
+	Load_Texture_Swap(&Img_Bt2,"Images/bt-Continue.png");
+	Load_Texture_Swap(&Img_Bt3,"Images/bt-Help.png");
+	Load_Texture_Swap(&Img_Bt4,"Images/bt-Exit.png");
+}
+void display(void)
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	glLoadIdentity();
+	
+	Map_Texture(&Img_Background);
+	Draw_Rect(&Rct_Background); // Dùng để load hình
+	/*Map_Texture(&Img_Ground);
+	Draw_Rect(&Rct_Ground);
+	Draw_Rect(&bt1);*/
+	Map_Texture(&Img_Bt1);
+	Draw_Rect(&BT_1);
+	Map_Texture(&Img_Bt2);
+	Draw_Rect(&BT_2);
+	Map_Texture(&Img_Bt3);
+	Draw_Rect(&BT_3);
+	Map_Texture(&Img_Bt4);
+	Draw_Rect(&BT_4);
+
+	glutSwapBuffers();
+} 
+
+void init()
+{
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glViewport(0, 0, WIDTH, HEIGHT);
+	// góc trái trên có tọa độ  là 0,0, góc dưới phải là w,h
+	gluOrtho2D(0, WIDTH, HEIGHT,0);
+    glMatrixMode(GL_MODELVIEW);
+
+	// Bật chế độ vẽ hình ảnh 2D
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_LINE_SMOOTH);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glutIgnoreKeyRepeat(GL_TRUE);
+    glEnable(GL_TEXTURE_2D);
+
+
+	Init_game();
+}
+// Cho phép gọi đi gọi lại nhiều lần
+void Timer(int value)
+{
+	glutPostRedisplay();
+	glutTimerFunc(INTERVAL,Timer, 0);
+}
+int main(int argc, char** argv)
+{
+	
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+	// lay kich thuoc man hinh tru cho cua so
+	int POS_X = (glutGet(GLUT_SCREEN_WIDTH)- WIDTH) >> 1;
+	int POS_Y = (glutGet(GLUT_SCREEN_HEIGHT)- HEIGHT) >> 1;
+	// Tao cua so ngay giua man hinh
+	glutInitWindowSize(WIDTH, HEIGHT);
+	glutInitWindowPosition(POS_X,POS_Y);
+	glutCreateWindow("SKY GARDEN");
+
+	init();
+	glutDisplayFunc(display);
+	glutTimerFunc(0,Timer,0);
+
+	glutMainLoop();
+	return 0;
+}
