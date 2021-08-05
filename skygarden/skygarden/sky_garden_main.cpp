@@ -18,7 +18,6 @@
 
 using namespace std;
 
-//#define STB_IMAGE_IMPLEMENTATION
 #define WIDTH 1280
 #define HEIGHT 720
 // Dùng để gọi lại
@@ -27,6 +26,7 @@ using namespace std;
 Rect    Rct_Background = {0, 1280, 720,0},
 		Rct_Background2 = {0, 1280, 720,0},
 		Rct_HelpScreen = {0, 1280, 720,0},
+		Rct_ShopScreen = {0, 1280, 720,0},
 		Rct_Ground = {200 , 300+200, 50+200 ,200},
 		bt1 = {200,300+200,50+400,400};
 
@@ -40,29 +40,66 @@ Rect // bt screen 1
 	 BT_back ={20,50+20,75+20,20},
 	 // filter lock
 	 filter_lock1={270,810+270,180,0},
-	 filter_lock2={270,810+270,180+180,180};
+	 filter_lock2={270,810+270,180+180,180},
+	 //button-Right
+	 BT_Store={1170,81+1170,76+100,100},
+	 BT_List={1170,76+1170,79+190,190},
+	 BT_Tui={1170,85+1170,73+280,280},
+	 //button-Left
+	 BT_Water_bottle={30,77+30,71+100,100},
+	 BT_Luoiliem={45,59+45,62+190,190},
+	 BT_Cuoc={45,59+45,66+290,290},
+	 //Button-Bottom
+	 BT_PotFlower={},
+	 BT_Flower={},
+	 //Load Container
+	 Container={360,675+360,85+600,600};
+Rect //icon
+	 icon_avt={400,54+400,35+640,640},
+	 icon_star={400,30+400,29+608,608},
+	 Bt_icon_muiten={370,98+370,110+405,405},
+	 Bt_icon_muiten1={550,98+550,110+405,405},
+	 Bt_icon_muiten2={730,98+730,110+405,405},
+	 Bt_icon_muiten3={910,98+910,110+405,405},
+	 pot_in_taskbar1={520,59+520,65+610,610};
 
-Image Img_Background, Img_Background2, Img_HelpScreen,
+Image Img_Background, Img_Background2, Img_HelpScreen, Img_ShopScreen,
 	  Img_Ground,
 	  Img_filter_lock,
 	  Img_Bt1, Img_Bt2, Img_Bt3, Img_Bt4,
-	  
 	  //bt back
-	  Img_Bt_back;
+	  Img_Bt_back,
+	  //img-button-right
+	  Img_Bt_Store,
+	  Img_Bt_List,
+	  Img_Bt_Tui,
+	  //img-button-right
+	  Img_Water_bottle, Img_Luoiliem, Img_Cuoc,
+	  //img-button-bottom
+	  Img_PotFlower,
+	  Img_Flower,
+	  //img-container
+	  Img_Container,
+	  //Pot
+	  Img_icon_muiten,
+	  Img_pot_in_taskbar1;
+
+Image Img_icon_star, Img_icon_avt;
+
+int status;
 
 // khai báo
 void Init_Menu();
 void Init_InGame();
 void display();
 void mouseClick_back(int button , int state, int x, int y);
+void mouseClick_back_ScreenGame(int button , int state, int x, int y);
 void mouseClick(int button , int state, int x, int y);
+void container_buttonLRB();
 void screenGame();
+void screenGame1();
 void screenHelp();
-
-
-
-//Đổi DisPlayIG thành screenGame
-
+void screenShop();
 
 void init()
 {
@@ -120,10 +157,34 @@ int main(int argc, char** argv)
 }
 //InGame
 void Init_InGame(){
+	//Load bg2
+	Load_Texture_Swap(&Img_Background2,"Images/bg2.png");
+	//Load screenHelp
+	Load_Texture_Swap(&Img_HelpScreen,"Images/bg3-help.png");
+	//Load screenStore
+	Load_Texture_Swap(&Img_ShopScreen,"Images/bg4-Shop.png");
 	//Load Bt back
 	Load_Texture_Swap(&Img_Bt_back,"Images/bt-back.png");
 	//load lớp phủ
 	Load_Texture_Swap(&Img_filter_lock,"Images/lopphu.png");
+	//Load button Right
+	Load_Texture_Swap(&Img_Bt_Store,"Images/bt-store.png");
+	Load_Texture_Swap(&Img_Bt_List,"Images/bt-list.png");
+	Load_Texture_Swap(&Img_Bt_Tui,"Images/bt-tui.png");
+	//Load button Left
+	Load_Texture_Swap(&Img_Water_bottle,"Images/bt-water-bottle.png");
+	Load_Texture_Swap(&Img_Luoiliem,"Images/bt-luoiliem.png");
+	Load_Texture_Swap(&Img_Cuoc,"Images/bt-cuoc.png");
+	//Load button Bottom
+	Load_Texture_Swap(&Img_PotFlower,"Images/bt-chauhoa.png");
+	//Load_Texture_Swap(&Img_Bt_Store,"Images/bt-store.png");
+	// Load ô chứa - container
+	Load_Texture_Swap(&Img_Container,"Images/Container.png");
+	//Load icon
+	Load_Texture_Swap(&Img_icon_avt,"Images/icon_avt.png");
+	Load_Texture_Swap(&Img_icon_star,"Images/icon_star.png");
+	Load_Texture_Swap(&Img_pot_in_taskbar1,"Images/bt-chauhoa.png");
+	Load_Texture_Swap(&Img_icon_muiten,"Images/muiten.png");
 }
 // Mỗi lần thêm hình thì vẽ khung cho nó
 void Init_Menu()
@@ -137,12 +198,27 @@ void Init_Menu()
 
 void mouseClick_back(int button , int state, int x, int y)
 {
-	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 20 && x <= 70 && y >= 20  && y <= 95 )
+	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 20 && x <= 70 && y >= 20  && y <= 95 && status == 0 )
     {
         glutDisplayFunc(display);
     }
+	//Trả về màn hình game
+	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN &&x >= 20 && x <= 70 && y >= 20  && y <= 95 && status == 1 )
+		glutDisplayFunc(screenGame);
+	//Chuyển qua màn hình shop
+	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 1170 && x <= 81+1170 && y >= 100 && y <= 76+100 && status == 0)
+		glutDisplayFunc(screenShop);
+	//427,30+427,29+450,450
+	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 427 && x <= 30+427 && y >= 450 && y <= 29+450)
+	{
+		glutDisplayFunc(screenGame1);
+	}
+	//370,98+370,110+405,405
+	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 370 && x <= 98+370 && y >= 405 && y <= 110+405)
+	{
+		glutDisplayFunc(screenGame1);
+	}
 }
-
 // click newgame
 void display()
 {
@@ -166,7 +242,6 @@ void display()
 }
 void mouseClick(int button , int state, int x, int y)
 {
-
 	//NEW GAME
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >=150 && x <= 400  && y >= 475 && y <=  550)
 		glutDisplayFunc(screenGame);
@@ -178,39 +253,100 @@ void mouseClick(int button , int state, int x, int y)
 	}
 	//Help
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 880 && x <= 1130 &&  y >= 475 && y <= 550)
-	{
 		glutDisplayFunc(screenHelp);
-	}
+
 	// exit
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 880 && x <= 1130 && y >= 575 && y <= 650)
-	{
 		exit(true);
-	}
 
 	//_____________End_____________
 	glutPostRedisplay();
+}
+//sử dụng button cho screen
+void container_buttonLRB()
+{
+	//load container
+	Map_Texture(&Img_Container);
+	Draw_Rect(&Container);
+	//Load icon
+	Map_Texture(&Img_icon_avt);
+	Draw_Rect(&icon_avt);
+	Map_Texture(&Img_icon_star);
+	Draw_Rect(&icon_star);
+	//Load button Right
+	Map_Texture(&Img_Bt_Store);
+	Draw_Rect(&BT_Store);
+	Map_Texture(&Img_Bt_List);
+	Draw_Rect(&BT_List);
+	Map_Texture(&Img_Bt_Tui);
+	Draw_Rect(&BT_Tui);
+	//Load button Left
+	Map_Texture(&Img_Water_bottle);
+	Draw_Rect(&BT_Water_bottle);
+	Map_Texture(&Img_Luoiliem);
+	Draw_Rect(&BT_Luoiliem);
+	Map_Texture(&Img_Cuoc);
+	Draw_Rect(&BT_Cuoc);
 }
 void screenGame()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
+	status = 0;
 	//_____________Start_____________
 	//Load bg
-	Load_Texture_Swap(&Img_Background2,"Images/bg2.png");
-
 	Map_Texture(&Img_Background2);
 	Draw_Rect(&Rct_Background2); 
-	// load lớp phủ
+	// load filter
 	Map_Texture(&Img_filter_lock);
-	Draw_Rect(&filter_lock1);
-	Draw_Rect(&filter_lock2);
+	Draw_Rect(&filter_lock1); // lock tầng 1
+	Draw_Rect(&filter_lock2); // lock tầng 2
 
 	//Load button back
 	Map_Texture(&Img_Bt_back);
 	Draw_Rect(&BT_back);
-	//goi bt back
+	container_buttonLRB();
+	Map_Texture(&Img_icon_muiten);
+	Draw_Rect(&Bt_icon_muiten);
+	Draw_Rect(&Bt_icon_muiten1);
+	Draw_Rect(&Bt_icon_muiten2);
+	Draw_Rect(&Bt_icon_muiten3);
+	//Chuyển màn sang shop
+ 
 	glutMouseFunc(mouseClick_back);
+	
+	
+	//_____________End_____________
+	glutSwapBuffers();
+}
+void screenGame1()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	glLoadIdentity();
+	status = 0;
+	//_____________Start_____________
+	//Load bg
+	Map_Texture(&Img_Background2);
+	Draw_Rect(&Rct_Background2); 
+	// load filter
+	Map_Texture(&Img_filter_lock);
+	Draw_Rect(&filter_lock1); // lock tầng 1
+	Draw_Rect(&filter_lock2); // lock tầng 2
 
+	//Load button back
+	Map_Texture(&Img_Bt_back);
+	Draw_Rect(&BT_back);
+	container_buttonLRB();
+	glutMouseFunc(mouseClick_back);
+	//Load chau
+	Map_Texture(&Img_icon_muiten);
+	Draw_Rect(&Bt_icon_muiten);
+	Draw_Rect(&Bt_icon_muiten1);
+	Draw_Rect(&Bt_icon_muiten2);
+	Draw_Rect(&Bt_icon_muiten3);
+
+	Map_Texture(&Img_pot_in_taskbar1);
+	Draw_Rect(&pot_in_taskbar1);
 	//_____________End_____________
 	glutSwapBuffers();
 }
@@ -218,18 +354,28 @@ void screenHelp()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
-	//_____________Start_____________
-	Map_Texture(&Img_Background2);
-	Draw_Rect(&Rct_Background2); 
-	Load_Texture_Swap(&Img_HelpScreen,"Images/bg3-help.png");
-
+	//_____________Start___________
 	Map_Texture(&Img_HelpScreen);
 	Draw_Rect(&Rct_HelpScreen);
 	glutMouseFunc(mouseClick_back);
 	//Load button back
+
 	Map_Texture(&Img_Bt_back);
 	Draw_Rect(&BT_back);
 	//_____________End_____________
 	glutSwapBuffers();
+}
+void screenShop()
+{
+	status = 1;
+	glClear(GL_COLOR_BUFFER_BIT);
+	glLoadIdentity();
+	//_____________Start___________
+	Map_Texture(&Img_ShopScreen);
+	Draw_Rect(&Rct_ShopScreen); 
+	glutMouseFunc(mouseClick_back);
+	//glutMouseFunc(mouseClick_back);
 
+	//_____________End_____________
+	glutSwapBuffers();
 }
