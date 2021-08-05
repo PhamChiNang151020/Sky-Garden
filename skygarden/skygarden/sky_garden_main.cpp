@@ -1,15 +1,20 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
-#include <GL/glut.h>
-#include <gl/GL.h>
-#include <gl/GLU.h>
+#include <glut.h>
+#include <gl\GL.h>
+#include <gl\GLU.h>
+#include <vector>
 #include <iostream>
 #include <math.h>
-#include <vector>
+#include <windows.h>
+#include <string.h>
+#include <loadpng.h>
+#include <process_image.h>
+#include <gl\gl_texture.h>
 
-#include "../Lib/loadpng.h"
-#include "../Lib/process_image.h"
-#include "../Lib/gl_texture.h"
+//#include "../Lib/loadpng.h"
+//#include "../Lib/process_image.h"
+//#include "../Lib/gl_texture.h"
 
 using namespace std;
 
