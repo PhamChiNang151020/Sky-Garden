@@ -1,4 +1,4 @@
-﻿Build started 06/08/2021 3:14:43 CH.
+﻿Build started 06/08/2021 5:27:20 CH.
      1>Project "D:\HocTap\LapTrinhDoHoa\Sky-Garden\skygarden\skygarden\skygarden.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\skygarden.unsuccessfulbuild" because "AlwaysCreate" was specified.
@@ -23,4 +23,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.16
+Time Elapsed 00:00:02.26
