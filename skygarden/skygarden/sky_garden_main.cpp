@@ -18,7 +18,8 @@
 
 using namespace std;
 
-#define WIDTH 1280
+
+#define WIDTH 1280	
 #define HEIGHT 720
 // Dùng để gọi lại
 #define INTERVAL 15
@@ -152,7 +153,7 @@ int main(int argc, char** argv)
 	glutInitWindowPosition(POS_X,POS_Y);
 	glutCreateWindow("SKY GARDEN");
 
-
+	
 	init();
 	glutDisplayFunc(display);
 	glutMouseFunc(mouseClick);
@@ -223,6 +224,7 @@ void mouseClick_back(int button , int state, int x, int y)
 // click newgame
 void display()
 {
+	glutSetWindowTitle("SKY GARDEN");
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 	//_____________Start___________
@@ -252,6 +254,7 @@ void mouseClick_back_display(int button , int state, int x, int y)
 }
 void Init_Exit()
 {
+	glutSetWindowTitle("EXIT");
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 	//_____________Start___________
@@ -326,6 +329,7 @@ void container_buttonLRB()
 }
 void screenGame()
 {
+	glutSetWindowTitle("SKY GARDEN");
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 	status = 0;
@@ -337,7 +341,6 @@ void screenGame()
 	Map_Texture(&Img_filter_lock);
 	Draw_Rect(&filter_lock1); // lock tầng 1
 	Draw_Rect(&filter_lock2); // lock tầng 2
-
 	//Load button back
 	Map_Texture(&Img_Bt_back);
 	Draw_Rect(&BT_back);
@@ -357,6 +360,7 @@ void screenGame()
 }
 void screenHelp()
 {
+	glutSetWindowTitle("HELP");
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 	//_____________Start___________
@@ -372,11 +376,13 @@ void screenHelp()
 }
 void screenShop()
 {
+	glutSetWindowTitle("SHOP");
 	status = 1;
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 	//_____________Start___________
 	Map_Texture(&Img_ShopScreen);
+	glutSetIconTitle("");
 	Draw_Rect(&Rct_ShopScreen); 
 	glutMouseFunc(mouseClick_back);
 	//Load button buy
