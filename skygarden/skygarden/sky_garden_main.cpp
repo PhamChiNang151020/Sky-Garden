@@ -23,6 +23,20 @@ using namespace std;
 #define HEIGHT 720
 // Dùng để gọi lại
 #define INTERVAL 15
+
+#define CLOUD_COUNT 3
+int xPot = 64, yPot = 58;
+int status;
+int chau = 0;
+
+// Khai báo struct lưu giá trị của chậu
+struct Pot{int x,y,z,c;};
+Pot pot[4] = {pot[0].x = 400, pot[0].y = xPot+400, pot[0].z = yPot + 450,pot[0].c = 450,
+	pot[1].x = pot[0].x + 200, pot[1].y = xPot+600, pot[1].z = yPot + 450,pot[1].c = 450,
+	pot[2].x = pot[0].x + 400, pot[2].y = xPot+800, pot[2].z = yPot + 450,pot[2].c = 450,
+	pot[3].x = pot[0].x + 600, pot[3].y = xPot+1000, pot[3].z = yPot + 450,pot[3].c = 450};
+
+
 // Trái Phải dưới trên
 Rect	Rct_Background = {0, 1280, 720,0},
 		Rct_Background2 = {0, 1280, 720,0},
@@ -32,7 +46,6 @@ Rect	Rct_Background = {0, 1280, 720,0},
 		//Exit display
 		Exit_YN={292,705+292,430+135,135},
 		bt1 = {200,300+200,50+400,400};
-
 
 Rect	// bt screen 1
 		BT_1={150,250+150,75+475,475}, //250x75
@@ -53,19 +66,19 @@ Rect	// bt screen 1
 		BT_Water_bottle={30,77+30,71+100,100},
 		BT_Harvest={45,64+45,67+195,195},
 		BT_Xeng={45,62+45,63+290,290},
-		//Button-Bottom
-		BT_PotFlower={},
-		BT_Flower={},
 		//Load Container
-		Container={360,675+360,85+600,600};
+		Container={360,675+360,85+600,600},
+		// Load Mission
+		Mission = {400,506+400,604 +67,67};
 Rect    //icon
 		icon_avt={400,54+400,35+640,640},
 		icon_star={400,30+400,29+608,608},
-		Bt_icon_arrow={370,98+370,110+405,405},
-		Bt_icon_arrow1={550,98+550,110+405,405},
-		Bt_icon_arrow2={730,98+730,110+405,405},
-		Bt_icon_arrow3={910,98+910,110+405,405},
-		pot_in_taskbar1={520,64+520,58+610,610};
+		Bt_icon_arrow={pot[0].x,pot[0].y,pot[0].z,pot[0].c},
+		Bt_icon_arrow1={pot[1].x,pot[1].y,pot[1].z,pot[1].c},
+		Bt_icon_arrow2={pot[2].x,pot[2].y,pot[2].z,pot[2].c},
+		Bt_icon_arrow3={pot[3].x,pot[3].y,pot[3].z,pot[3].c},
+		// chau hoa trong table
+		Pot_Tb1 = {600,xPot+600,yPot + 612,612};
 
 Image	Img_Background, Img_Background2, Img_HelpScreen, Img_ShopScreen,
 		Img_Ground,
@@ -83,17 +96,17 @@ Image	Img_Background, Img_Background2, Img_HelpScreen, Img_ShopScreen,
 		//img-button-right
 		Img_Water_bottle, Img_Harvest, Img_Xeng,
 		//img-button-bottom
-		Img_PotFlower,
-		Img_Flower,
+		Img_Pot1,Img_Pot2,Img_Pot3,
 		//img-container
 		Img_Container,
 		//Pot
 		Img_icon_arrow,
-		Img_pot_in_taskbar1;
+		Img_pot_in_taskbar1,
+		//Img mission
+		Img_Mission;
 
 Image	Img_icon_star, Img_icon_avt;
 
-int status;
 
 // khai báo
 void Init_Menu();
@@ -106,6 +119,8 @@ void mouseClick_back_display(int button , int state, int x, int y);
 void mouseClick(int button , int state, int x, int y);
 void container_buttonLRB();
 void screenGame();
+void screenGame1();
+void screenGame2();
 void screenHelp();
 void screenShop();
 
@@ -189,16 +204,20 @@ void Init_InGame(){
 	Load_Texture_Swap(&Img_Harvest,"Images/bt-Thuhoach.png");
 	Load_Texture_Swap(&Img_Xeng,"Images/bt-Xeng.png");
 	//Load button Bottom
-	Load_Texture_Swap(&Img_PotFlower,"Images/bt-chauhoa.png");
+	Load_Texture_Swap(&Img_Pot1,"Images/Pot1.png");
+	Load_Texture_Swap(&Img_Pot2,"Images/Pot1.png");
+	Load_Texture_Swap(&Img_Pot3,"Images/Pot1.png");
 	// Load ô chứa - container
 	Load_Texture_Swap(&Img_Container,"Images/Container.png");
 	//Load icon
 	Load_Texture_Swap(&Img_icon_avt,"Images/icon_avt.png");
 	Load_Texture_Swap(&Img_icon_star,"Images/icon_star.png");
-	Load_Texture_Swap(&Img_pot_in_taskbar1,"Images/Pot1.png");
+	//Load_Texture_Swap(&Img_pot_in_taskbar1,"Images/Pot1.png");
 	Load_Texture_Swap(&Img_icon_arrow,"Images/muiten.png");
 	//Load button buy
 	Load_Texture_Swap(&Img_Bt_buy,"Images/bt-Buy.png");
+	// Load Mission
+	Load_Texture_Swap(&Img_Mission,"Images/Mission.png");
 }
 // Mỗi lần thêm hình thì vẽ khung cho nó
 void Init_Menu()
@@ -222,6 +241,24 @@ void mouseClick_back(int button , int state, int x, int y)
 	//Chuyển qua màn hình shop
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 1170 && x <= 81+1170 && y >= 100 && y <= 76+100 && status == 0)
 		glutDisplayFunc(screenShop);
+	//
+	for(int i = 0; i < 4;i++)
+	{
+		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= pot[i].x && x <= pot[i].y && y >= pot[i].c && y <= pot[i].z && status == 0 )
+		{
+		//load chau trong table
+		cout << "click dat chau";
+		cout << i;
+		chau = i;
+		glutDisplayFunc(screenGame1);
+		glutPostRedisplay();
+		}
+	}
+	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 600 && x <= 660 && y >= 606 && y <= 676 )
+	{
+		glutDisplayFunc(screenGame2);
+	}
+	glutPostRedisplay();
 }
 // click newgame
 void display()
@@ -309,7 +346,7 @@ void container_buttonLRB()
 	//load container
 	Map_Texture(&Img_Container);
 	Draw_Rect(&Container);
-	//Load icon
+	//Load icon botton
 	Map_Texture(&Img_icon_avt);
 	Draw_Rect(&icon_avt);
 	Map_Texture(&Img_icon_star);
@@ -352,11 +389,195 @@ void screenGame()
 	Draw_Rect(&Bt_icon_arrow1);
 	Draw_Rect(&Bt_icon_arrow2);
 	Draw_Rect(&Bt_icon_arrow3);
+
+	//Load Mission
+	/*Map_Texture(&Img_Mission);
+	Draw_Rect(&Mission);*/
+
 	//Chuyển màn sang shop
- 
 	glutMouseFunc(mouseClick_back);
 	
 	
+	//_____________End_____________
+	glutSwapBuffers();
+}
+void screenGame1()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	glLoadIdentity();
+	status = 0;
+	cout << chau;
+	//_____________Start_____________
+	//Load bg
+	Load_Texture_Swap(&Img_Background2,"Images/bg2.png");
+	Map_Texture(&Img_Background2);
+	Draw_Rect(&Rct_Background2);
+	
+	// load lớp phủ
+	Map_Texture(&Img_filter_lock);
+	Draw_Rect(&filter_lock1);
+	Draw_Rect(&filter_lock2);
+
+	//Load button back
+	Map_Texture(&Img_Bt_back);
+	Draw_Rect(&BT_back);
+	
+	Map_Texture(&Img_Container);
+	Draw_Rect(&Container);
+	//Load chau hoa
+	Map_Texture(&Img_icon_arrow);
+	Draw_Rect(&Bt_icon_arrow);
+	Map_Texture(&Img_icon_arrow);
+	Draw_Rect(&Bt_icon_arrow1);
+	Map_Texture(&Img_icon_arrow);
+	Draw_Rect(&Bt_icon_arrow2);
+	Map_Texture(&Img_icon_arrow);
+	Draw_Rect(&Bt_icon_arrow3);
+
+	//Load icon botton
+	Map_Texture(&Img_icon_avt);
+	Draw_Rect(&icon_avt);
+	Map_Texture(&Img_icon_star);
+	Draw_Rect(&icon_star);
+	//Load button Left
+	Map_Texture(&Img_Water_bottle);
+	Draw_Rect(&BT_Water_bottle);
+	Map_Texture(&Img_Harvest);
+	Draw_Rect(&BT_Harvest);
+	Map_Texture(&Img_Xeng);
+	Draw_Rect(&BT_Xeng);
+	// store
+	Map_Texture(&Img_Bt_Store);
+	Draw_Rect(&BT_Store);
+	//Load bag
+	Map_Texture(&Img_Bt_Bag);
+	Draw_Rect(&BT_Bag);
+	//Load quest
+	Map_Texture(&Img_Bt_List);
+	Draw_Rect(&BT_List);
+
+	//Load table
+	
+	Map_Texture(&Img_Pot1);
+	Draw_Rect(&Pot_Tb1);
+	
+	
+	glutMouseFunc(mouseClick_back);
+	glutTimerFunc(0,Timer,0);
+	//_____________End_____________
+	glutSwapBuffers();
+}
+void screenGame2()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	glLoadIdentity();
+	//_____________Start_____________
+	cout << chau;
+	//Load bg
+	Load_Texture_Swap(&Img_Background2,"Images/bg2.png");
+	Map_Texture(&Img_Background2);
+	Draw_Rect(&Rct_Background2);
+	
+	// load lớp phủ
+	Map_Texture(&Img_filter_lock);
+	Draw_Rect(&filter_lock1);
+	Draw_Rect(&filter_lock2);
+
+	//Load icon botton
+	Map_Texture(&Img_icon_avt);
+	Draw_Rect(&icon_avt);
+	Map_Texture(&Img_icon_star);
+	Draw_Rect(&icon_star);
+
+	//Load button Left
+	Map_Texture(&Img_Water_bottle);
+	Draw_Rect(&BT_Water_bottle);
+	Map_Texture(&Img_Harvest);
+	Draw_Rect(&BT_Harvest);
+	Map_Texture(&Img_Xeng);
+	Draw_Rect(&BT_Xeng);
+
+	//Load button back
+	Map_Texture(&Img_Bt_back);
+	Draw_Rect(&BT_back);
+	//goi bt back
+	
+	//Load chau hoa
+	if(chau == 0 ){
+
+	Map_Texture(&Img_Pot1);
+	Draw_Rect(&Bt_icon_arrow);
+	
+	Map_Texture(&Img_icon_arrow);
+	Draw_Rect(&Bt_icon_arrow1);
+	
+	Map_Texture(&Img_icon_arrow);
+	Draw_Rect(&Bt_icon_arrow2);
+	
+	Map_Texture(&Img_icon_arrow);
+	Draw_Rect(&Bt_icon_arrow3);
+
+	}
+	if(chau == 1)
+	{
+		Map_Texture(&Img_icon_arrow);
+		Draw_Rect(&Bt_icon_arrow);
+
+		Map_Texture(&Img_Pot1);
+		Draw_Rect(&Bt_icon_arrow1);
+
+		Map_Texture(&Img_icon_arrow);
+		Draw_Rect(&Bt_icon_arrow2);
+
+		Map_Texture(&Img_icon_arrow);
+		Draw_Rect(&Bt_icon_arrow3);
+	}
+	if(chau == 2)
+	{
+		Map_Texture(&Img_icon_arrow);
+		Draw_Rect(&Bt_icon_arrow);
+
+		Map_Texture(&Img_icon_arrow);
+		Draw_Rect(&Bt_icon_arrow1);
+
+		Map_Texture(&Img_Pot1);
+		Draw_Rect(&Bt_icon_arrow2);
+
+		Map_Texture(&Img_icon_arrow);
+		Draw_Rect(&Bt_icon_arrow3);
+	}
+	if(chau == 3)
+	{
+		Map_Texture(&Img_icon_arrow);
+		Draw_Rect(&Bt_icon_arrow);
+
+		Map_Texture(&Img_icon_arrow);
+		Draw_Rect(&Bt_icon_arrow1);
+
+		Map_Texture(&Img_icon_arrow);
+		Draw_Rect(&Bt_icon_arrow2);
+
+		Map_Texture(&Img_Pot1);
+		Draw_Rect(&Bt_icon_arrow3);
+	}
+	
+	//Load table
+	Map_Texture(&Img_Container);
+	Draw_Rect(&Container);
+	Map_Texture(&Img_Pot1);
+	Draw_Rect(&Pot_Tb1);
+	// store
+	Map_Texture(&Img_Bt_Store);
+	Draw_Rect(&BT_Store);
+	//Load bag
+	Map_Texture(&Img_Bt_Bag);
+	Draw_Rect(&BT_Bag);
+	//Load quest
+	Map_Texture(&Img_Bt_List);
+	Draw_Rect(&BT_List);
+	//Load store
+	glutMouseFunc(mouseClick_back);
+	glutTimerFunc(0,Timer,0);
 	//_____________End_____________
 	glutSwapBuffers();
 }
