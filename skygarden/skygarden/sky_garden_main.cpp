@@ -101,6 +101,7 @@ void Init_Exit();
 void display();
 void mouseClick_back(int button , int state, int x, int y);
 void mouseClick_back_ScreenGame(int button , int state, int x, int y);
+void mouseClick_back_display(int button , int state, int x, int y);
 void mouseClick(int button , int state, int x, int y);
 void container_buttonLRB();
 void screenGame();
@@ -224,9 +225,8 @@ void display()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
-	//Sử dụng chuột
+	//_____________Start___________
 	glutMouseFunc(mouseClick);
-
 	Map_Texture(&Img_Background);
 	Draw_Rect(&Rct_Background); 
 	Map_Texture(&Img_Bt1);
@@ -237,8 +237,18 @@ void display()
 	Draw_Rect(&BT_3);
 	Map_Texture(&Img_Bt4);
 	Draw_Rect(&BT_4);
-
+	//_____________End_____________
 	glutSwapBuffers();
+}
+void mouseClick_back_display(int button , int state, int x, int y)
+{
+	//yes
+	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 495 && x <= 495+110  && y >= 380 && y <=  380+110)
+		exit(true);
+		
+	//no
+	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >=687 && x <= 687+110  && y >= 380 && y <=  380+110)
+		glutDisplayFunc(display);
 }
 void Init_Exit()
 {
@@ -246,10 +256,22 @@ void Init_Exit()
 	glLoadIdentity();
 	//_____________Start___________
 	//Load Display
-	glutDisplayFunc(display);
+	Map_Texture(&Img_Background);
+	Draw_Rect(&Rct_Background); 
+	Map_Texture(&Img_Bt1);
+	Draw_Rect(&BT_1);
+	Map_Texture(&Img_Bt2);
+	Draw_Rect(&BT_2);
+	Map_Texture(&Img_Bt3);
+	Draw_Rect(&BT_3);
+	Map_Texture(&Img_Bt4);
+	Draw_Rect(&BT_4);
 	//Exit
 	Map_Texture(&Img_Exit_YN);
 	Draw_Rect(&Exit_YN); 
+
+	glutMouseFunc(mouseClick_back_display);
+
 	//_____________End_____________
 	glutSwapBuffers();
 }
