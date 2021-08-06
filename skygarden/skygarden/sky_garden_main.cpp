@@ -28,6 +28,8 @@ Rect    Rct_Background = {0, 1280, 720,0},
 		Rct_HelpScreen = {0, 1280, 720,0},
 		Rct_ShopScreen = {0, 1280, 720,0},
 		Rct_Ground = {200 , 300+200, 50+200 ,200},
+		//Exit display
+		Exit_YN={292,705+292,430+135,135},
 		bt1 = {200,300+200,50+400,400};
 
 
@@ -36,7 +38,8 @@ Rect // bt screen 1
 	 BT_2={150,250+150,75+575,575},
 	 BT_3={880,250+880,75+475,475},
 	 BT_4={880,250+880,75+575,575},
-	 // bt back
+	 // bt back, buy
+	 BT_Buy={990,205+990,75+605,605},
 	 BT_back ={20,50+20,75+20,20},
 	 // filter lock
 	 filter_lock1={270,810+270,180,0},
@@ -47,8 +50,8 @@ Rect // bt screen 1
 	 BT_Tui={1170,85+1170,73+280,280},
 	 //button-Left
 	 BT_Water_bottle={30,77+30,71+100,100},
-	 BT_Luoiliem={45,59+45,62+190,190},
-	 BT_Cuoc={45,59+45,66+290,290},
+	 BT_Thuhoach={45,64+45,67+195,195},
+	 BT_Xeng={45,62+45,63+290,290},
 	 //Button-Bottom
 	 BT_PotFlower={},
 	 BT_Flower={},
@@ -61,20 +64,23 @@ Rect //icon
 	 Bt_icon_muiten1={550,98+550,110+405,405},
 	 Bt_icon_muiten2={730,98+730,110+405,405},
 	 Bt_icon_muiten3={910,98+910,110+405,405},
-	 pot_in_taskbar1={520,59+520,65+610,610};
+	 pot_in_taskbar1={520,64+520,58+610,610};
 
 Image Img_Background, Img_Background2, Img_HelpScreen, Img_ShopScreen,
 	  Img_Ground,
 	  Img_filter_lock,
 	  Img_Bt1, Img_Bt2, Img_Bt3, Img_Bt4,
-	  //bt back
+	  //Exit display
+	  Img_Exit_YN,
+	  //bt back, buy
+	  Img_Bt_buy,
 	  Img_Bt_back,
 	  //img-button-right
 	  Img_Bt_Store,
 	  Img_Bt_List,
 	  Img_Bt_Tui,
 	  //img-button-right
-	  Img_Water_bottle, Img_Luoiliem, Img_Cuoc,
+	  Img_Water_bottle, Img_Thuhoach, Img_Xeng,
 	  //img-button-bottom
 	  Img_PotFlower,
 	  Img_Flower,
@@ -91,13 +97,13 @@ int status;
 // khai báo
 void Init_Menu();
 void Init_InGame();
+void Init_Exit();
 void display();
 void mouseClick_back(int button , int state, int x, int y);
 void mouseClick_back_ScreenGame(int button , int state, int x, int y);
 void mouseClick(int button , int state, int x, int y);
 void container_buttonLRB();
 void screenGame();
-void screenGame1();
 void screenHelp();
 void screenShop();
 
@@ -159,6 +165,8 @@ int main(int argc, char** argv)
 void Init_InGame(){
 	//Load bg2
 	Load_Texture_Swap(&Img_Background2,"Images/bg2.png");
+	//Exit display
+	Load_Texture_Swap(&Img_Exit_YN,"Images/Exit_YN.png");
 	//Load screenHelp
 	Load_Texture_Swap(&Img_HelpScreen,"Images/bg3-help.png");
 	//Load screenStore
@@ -173,8 +181,8 @@ void Init_InGame(){
 	Load_Texture_Swap(&Img_Bt_Tui,"Images/bt-tui.png");
 	//Load button Left
 	Load_Texture_Swap(&Img_Water_bottle,"Images/bt-water-bottle.png");
-	Load_Texture_Swap(&Img_Luoiliem,"Images/bt-luoiliem.png");
-	Load_Texture_Swap(&Img_Cuoc,"Images/bt-cuoc.png");
+	Load_Texture_Swap(&Img_Thuhoach,"Images/bt-Thuhoach.png");
+	Load_Texture_Swap(&Img_Xeng,"Images/bt-Xeng.png");
 	//Load button Bottom
 	Load_Texture_Swap(&Img_PotFlower,"Images/bt-chauhoa.png");
 	//Load_Texture_Swap(&Img_Bt_Store,"Images/bt-store.png");
@@ -183,8 +191,10 @@ void Init_InGame(){
 	//Load icon
 	Load_Texture_Swap(&Img_icon_avt,"Images/icon_avt.png");
 	Load_Texture_Swap(&Img_icon_star,"Images/icon_star.png");
-	Load_Texture_Swap(&Img_pot_in_taskbar1,"Images/bt-chauhoa.png");
+	Load_Texture_Swap(&Img_pot_in_taskbar1,"Images/Pot1.png");
 	Load_Texture_Swap(&Img_icon_muiten,"Images/muiten.png");
+	//Load button buy
+	Load_Texture_Swap(&Img_Bt_buy,"Images/bt-Buy.png");
 }
 // Mỗi lần thêm hình thì vẽ khung cho nó
 void Init_Menu()
@@ -208,16 +218,6 @@ void mouseClick_back(int button , int state, int x, int y)
 	//Chuyển qua màn hình shop
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 1170 && x <= 81+1170 && y >= 100 && y <= 76+100 && status == 0)
 		glutDisplayFunc(screenShop);
-	//427,30+427,29+450,450
-	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 427 && x <= 30+427 && y >= 450 && y <= 29+450)
-	{
-		glutDisplayFunc(screenGame1);
-	}
-	//370,98+370,110+405,405
-	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 370 && x <= 98+370 && y >= 405 && y <= 110+405)
-	{
-		glutDisplayFunc(screenGame1);
-	}
 }
 // click newgame
 void display()
@@ -240,6 +240,19 @@ void display()
 
 	glutSwapBuffers();
 }
+void Init_Exit()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	glLoadIdentity();
+	//_____________Start___________
+	//Load Display
+	glutDisplayFunc(display);
+	//Exit
+	Map_Texture(&Img_Exit_YN);
+	Draw_Rect(&Exit_YN); 
+	//_____________End_____________
+	glutSwapBuffers();
+}
 void mouseClick(int button , int state, int x, int y)
 {
 	//NEW GAME
@@ -257,7 +270,8 @@ void mouseClick(int button , int state, int x, int y)
 
 	// exit
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 880 && x <= 1130 && y >= 575 && y <= 650)
-		exit(true);
+		//exit(true);
+		glutDisplayFunc(Init_Exit);
 
 	//_____________End_____________
 	glutPostRedisplay();
@@ -283,10 +297,10 @@ void container_buttonLRB()
 	//Load button Left
 	Map_Texture(&Img_Water_bottle);
 	Draw_Rect(&BT_Water_bottle);
-	Map_Texture(&Img_Luoiliem);
-	Draw_Rect(&BT_Luoiliem);
-	Map_Texture(&Img_Cuoc);
-	Draw_Rect(&BT_Cuoc);
+	Map_Texture(&Img_Thuhoach);
+	Draw_Rect(&BT_Thuhoach);
+	Map_Texture(&Img_Xeng);
+	Draw_Rect(&BT_Xeng);
 }
 void screenGame()
 {
@@ -319,37 +333,6 @@ void screenGame()
 	//_____________End_____________
 	glutSwapBuffers();
 }
-void screenGame1()
-{
-	glClear(GL_COLOR_BUFFER_BIT);
-	glLoadIdentity();
-	status = 0;
-	//_____________Start_____________
-	//Load bg
-	Map_Texture(&Img_Background2);
-	Draw_Rect(&Rct_Background2); 
-	// load filter
-	Map_Texture(&Img_filter_lock);
-	Draw_Rect(&filter_lock1); // lock tầng 1
-	Draw_Rect(&filter_lock2); // lock tầng 2
-
-	//Load button back
-	Map_Texture(&Img_Bt_back);
-	Draw_Rect(&BT_back);
-	container_buttonLRB();
-	glutMouseFunc(mouseClick_back);
-	//Load chau
-	Map_Texture(&Img_icon_muiten);
-	Draw_Rect(&Bt_icon_muiten);
-	Draw_Rect(&Bt_icon_muiten1);
-	Draw_Rect(&Bt_icon_muiten2);
-	Draw_Rect(&Bt_icon_muiten3);
-
-	Map_Texture(&Img_pot_in_taskbar1);
-	Draw_Rect(&pot_in_taskbar1);
-	//_____________End_____________
-	glutSwapBuffers();
-}
 void screenHelp()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -374,7 +357,9 @@ void screenShop()
 	Map_Texture(&Img_ShopScreen);
 	Draw_Rect(&Rct_ShopScreen); 
 	glutMouseFunc(mouseClick_back);
-	//glutMouseFunc(mouseClick_back);
+	//Load button buy
+	Map_Texture(&Img_Bt_buy);
+	Draw_Rect(&BT_Buy); 
 
 	//_____________End_____________
 	glutSwapBuffers();
