@@ -24,7 +24,7 @@ using namespace std;
 // Dùng để gọi lại
 #define INTERVAL 15
 // Trái Phải dưới trên
-Rect    Rct_Background = {0, 1280, 720,0},
+Rect	Rct_Background = {0, 1280, 720,0},
 		Rct_Background2 = {0, 1280, 720,0},
 		Rct_HelpScreen = {0, 1280, 720,0},
 		Rct_ShopScreen = {0, 1280, 720,0},
@@ -34,64 +34,64 @@ Rect    Rct_Background = {0, 1280, 720,0},
 		bt1 = {200,300+200,50+400,400};
 
 
-Rect // bt screen 1
-	 BT_1={150,250+150,75+475,475}, //250x75
-	 BT_2={150,250+150,75+575,575},
-	 BT_3={880,250+880,75+475,475},
-	 BT_4={880,250+880,75+575,575},
-	 // bt back, buy
-	 BT_Buy={990,205+990,75+605,605},
-	 BT_back ={20,50+20,75+20,20},
-	 // filter lock
-	 filter_lock1={270,810+270,180,0},
-	 filter_lock2={270,810+270,180+180,180},
-	 //button-Right
-	 BT_Store={1170,81+1170,76+100,100},
-	 BT_List={1170,76+1170,79+190,190},
-	 BT_Tui={1170,85+1170,73+280,280},
-	 //button-Left
-	 BT_Water_bottle={30,77+30,71+100,100},
-	 BT_Thuhoach={45,64+45,67+195,195},
-	 BT_Xeng={45,62+45,63+290,290},
-	 //Button-Bottom
-	 BT_PotFlower={},
-	 BT_Flower={},
-	 //Load Container
-	 Container={360,675+360,85+600,600};
-Rect //icon
-	 icon_avt={400,54+400,35+640,640},
-	 icon_star={400,30+400,29+608,608},
-	 Bt_icon_muiten={370,98+370,110+405,405},
-	 Bt_icon_muiten1={550,98+550,110+405,405},
-	 Bt_icon_muiten2={730,98+730,110+405,405},
-	 Bt_icon_muiten3={910,98+910,110+405,405},
-	 pot_in_taskbar1={520,64+520,58+610,610};
+Rect	// bt screen 1
+		BT_1={150,250+150,75+475,475}, //250x75
+		BT_2={150,250+150,75+575,575},
+		BT_3={880,250+880,75+475,475},
+		BT_4={880,250+880,75+575,575},
+		// bt back, buy
+		BT_Buy={990,205+990,75+605,605},
+		BT_back ={20,50+20,75+20,20},
+		// filter lock
+		filter_lock1={270,810+270,180,0},
+		filter_lock2={270,810+270,180+180,180},
+		//button-Right
+		BT_Store={1170,81+1170,76+100,100},
+		BT_List={1170,76+1170,79+190,190},
+		BT_Bag={1170,85+1170,73+280,280},
+		//button-Left
+		BT_Water_bottle={30,77+30,71+100,100},
+		BT_Harvest={45,64+45,67+195,195},
+		BT_Xeng={45,62+45,63+290,290},
+		//Button-Bottom
+		BT_PotFlower={},
+		BT_Flower={},
+		//Load Container
+		Container={360,675+360,85+600,600};
+Rect    //icon
+		icon_avt={400,54+400,35+640,640},
+		icon_star={400,30+400,29+608,608},
+		Bt_icon_arrow={370,98+370,110+405,405},
+		Bt_icon_arrow1={550,98+550,110+405,405},
+		Bt_icon_arrow2={730,98+730,110+405,405},
+		Bt_icon_arrow3={910,98+910,110+405,405},
+		pot_in_taskbar1={520,64+520,58+610,610};
 
-Image Img_Background, Img_Background2, Img_HelpScreen, Img_ShopScreen,
-	  Img_Ground,
-	  Img_filter_lock,
-	  Img_Bt1, Img_Bt2, Img_Bt3, Img_Bt4,
-	  //Exit display
-	  Img_Exit_YN,
-	  //bt back, buy
-	  Img_Bt_buy,
-	  Img_Bt_back,
-	  //img-button-right
-	  Img_Bt_Store,
-	  Img_Bt_List,
-	  Img_Bt_Tui,
-	  //img-button-right
-	  Img_Water_bottle, Img_Thuhoach, Img_Xeng,
-	  //img-button-bottom
-	  Img_PotFlower,
-	  Img_Flower,
-	  //img-container
-	  Img_Container,
-	  //Pot
-	  Img_icon_muiten,
-	  Img_pot_in_taskbar1;
+Image	Img_Background, Img_Background2, Img_HelpScreen, Img_ShopScreen,
+		Img_Ground,
+		Img_filter_lock,
+		Img_Bt1, Img_Bt2, Img_Bt3, Img_Bt4,
+		//Exit display
+		Img_Exit_YN,
+		//bt back, buy
+		Img_Bt_buy,
+		Img_Bt_back,
+		//img-button-right
+		Img_Bt_Store,
+		Img_Bt_List,
+		Img_Bt_Bag,
+		//img-button-right
+		Img_Water_bottle, Img_Harvest, Img_Xeng,
+		//img-button-bottom
+		Img_PotFlower,
+		Img_Flower,
+		//img-container
+		Img_Container,
+		//Pot
+		Img_icon_arrow,
+		Img_pot_in_taskbar1;
 
-Image Img_icon_star, Img_icon_avt;
+Image	Img_icon_star, Img_icon_avt;
 
 int status;
 
@@ -153,6 +153,9 @@ int main(int argc, char** argv)
 	glutInitWindowPosition(POS_X,POS_Y);
 	glutCreateWindow("SKY GARDEN");
 
+	//gọi icon
+	//glutSetIconTitle("ic_skygarden.ico");
+
 	
 	init();
 	glutDisplayFunc(display);
@@ -180,21 +183,20 @@ void Init_InGame(){
 	//Load button Right
 	Load_Texture_Swap(&Img_Bt_Store,"Images/bt-store.png");
 	Load_Texture_Swap(&Img_Bt_List,"Images/bt-list.png");
-	Load_Texture_Swap(&Img_Bt_Tui,"Images/bt-tui.png");
+	Load_Texture_Swap(&Img_Bt_Bag,"Images/bt-Tui.png");
 	//Load button Left
 	Load_Texture_Swap(&Img_Water_bottle,"Images/bt-water-bottle.png");
-	Load_Texture_Swap(&Img_Thuhoach,"Images/bt-Thuhoach.png");
+	Load_Texture_Swap(&Img_Harvest,"Images/bt-Thuhoach.png");
 	Load_Texture_Swap(&Img_Xeng,"Images/bt-Xeng.png");
 	//Load button Bottom
 	Load_Texture_Swap(&Img_PotFlower,"Images/bt-chauhoa.png");
-	//Load_Texture_Swap(&Img_Bt_Store,"Images/bt-store.png");
 	// Load ô chứa - container
 	Load_Texture_Swap(&Img_Container,"Images/Container.png");
 	//Load icon
 	Load_Texture_Swap(&Img_icon_avt,"Images/icon_avt.png");
 	Load_Texture_Swap(&Img_icon_star,"Images/icon_star.png");
 	Load_Texture_Swap(&Img_pot_in_taskbar1,"Images/Pot1.png");
-	Load_Texture_Swap(&Img_icon_muiten,"Images/muiten.png");
+	Load_Texture_Swap(&Img_icon_arrow,"Images/muiten.png");
 	//Load button buy
 	Load_Texture_Swap(&Img_Bt_buy,"Images/bt-Buy.png");
 }
@@ -317,13 +319,13 @@ void container_buttonLRB()
 	Draw_Rect(&BT_Store);
 	Map_Texture(&Img_Bt_List);
 	Draw_Rect(&BT_List);
-	Map_Texture(&Img_Bt_Tui);
-	Draw_Rect(&BT_Tui);
+	Map_Texture(&Img_Bt_Bag);
+	Draw_Rect(&BT_Bag);
 	//Load button Left
 	Map_Texture(&Img_Water_bottle);
 	Draw_Rect(&BT_Water_bottle);
-	Map_Texture(&Img_Thuhoach);
-	Draw_Rect(&BT_Thuhoach);
+	Map_Texture(&Img_Harvest);
+	Draw_Rect(&BT_Harvest);
 	Map_Texture(&Img_Xeng);
 	Draw_Rect(&BT_Xeng);
 }
@@ -345,11 +347,11 @@ void screenGame()
 	Map_Texture(&Img_Bt_back);
 	Draw_Rect(&BT_back);
 	container_buttonLRB();
-	Map_Texture(&Img_icon_muiten);
-	Draw_Rect(&Bt_icon_muiten);
-	Draw_Rect(&Bt_icon_muiten1);
-	Draw_Rect(&Bt_icon_muiten2);
-	Draw_Rect(&Bt_icon_muiten3);
+	Map_Texture(&Img_icon_arrow);
+	Draw_Rect(&Bt_icon_arrow);
+	Draw_Rect(&Bt_icon_arrow1);
+	Draw_Rect(&Bt_icon_arrow2);
+	Draw_Rect(&Bt_icon_arrow3);
 	//Chuyển màn sang shop
  
 	glutMouseFunc(mouseClick_back);
