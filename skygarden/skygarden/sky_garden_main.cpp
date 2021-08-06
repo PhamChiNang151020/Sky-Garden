@@ -12,7 +12,7 @@
 #include <process_image.h>
 #include <gl\gl_texture.h>
 
-//Tùng
+//Năng
 
 using namespace std;
 //Kích thước màn hình
@@ -126,6 +126,7 @@ void mouseClick_back_ScreenGame(int button , int state, int x, int y);
 void mouseClick_back_display(int button , int state, int x, int y);
 void mouseClick(int button , int state, int x, int y);
 void container_buttonLRB();
+void Mission();
 void screenGame();
 void screenGame1();
 void screenGame2();
@@ -165,7 +166,6 @@ void Timer(int value)
 }
 int main(int argc, char** argv)
 {
-	
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	// lay kich thuoc man hinh tru cho cua so
@@ -179,7 +179,6 @@ int main(int argc, char** argv)
 	//gọi icon
 	//glutSetIconTitle("ic_skygarden.ico");
 
-	
 	init();
 	glutDisplayFunc(display);
 	glutMouseFunc(mouseClick);
@@ -247,6 +246,27 @@ void Init_Menu()
 	Load_Texture_Swap(&Img_Help,"Images/bt-Help.png");
 	Load_Texture_Swap(&Img_Exit,"Images/bt-Exit.png");
 }
+void display()
+{
+	glutSetWindowTitle("SKY GARDEN");
+	glClear(GL_COLOR_BUFFER_BIT);
+	glLoadIdentity();
+	//_____________Start___________
+	glutMouseFunc(mouseClick);
+	Map_Texture(&Img_Background);
+	Draw_Rect(&Rct_Background); 
+	Map_Texture(&Img_NewGame);
+	Draw_Rect(&Rct_btn_NewGame);
+	Map_Texture(&Img_Continue);
+	Draw_Rect(&Rct_btn_Continue);
+	Map_Texture(&Img_Help);
+	Draw_Rect(&Rct_btn_Help);
+	Map_Texture(&Img_Exit);
+	Draw_Rect(&Rct_btn_Exit);
+	//_____________End_____________
+	glutSwapBuffers();
+}
+// khi chọn no trong cửa sổ exit
 // back xanh
 void mouseClick_back(int button , int state, int x, int y)
 {
@@ -277,30 +297,12 @@ void mouseClick_back(int button , int state, int x, int y)
 	{
 		glutDisplayFunc(screenGame2);
 	}
+	//Load Mission 1170,76+1170,79+190,190
+	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 1170 && x <= 76+1170  && y >= 190 && y <=  79+190)
+		glutDisplayFunc(Mission);
 	glutPostRedisplay();
 }
 // click newgame
-void display()
-{
-	glutSetWindowTitle("SKY GARDEN");
-	glClear(GL_COLOR_BUFFER_BIT);
-	glLoadIdentity();
-	//_____________Start___________
-	glutMouseFunc(mouseClick);
-	Map_Texture(&Img_Background);
-	Draw_Rect(&Rct_Background); 
-	Map_Texture(&Img_NewGame);
-	Draw_Rect(&Rct_btn_NewGame);
-	Map_Texture(&Img_Continue);
-	Draw_Rect(&Rct_btn_Continue);
-	Map_Texture(&Img_Help);
-	Draw_Rect(&Rct_btn_Help);
-	Map_Texture(&Img_Exit);
-	Draw_Rect(&Rct_btn_Exit);
-	//_____________End_____________
-	glutSwapBuffers();
-}
-// khi chọn no trong cửa sổ exit
 void mouseClick_back_display(int button , int state, int x, int y)
 {
 	//yes
@@ -310,6 +312,36 @@ void mouseClick_back_display(int button , int state, int x, int y)
 	//no
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >=687 && x <= 687+110  && y >= 380 && y <=  380+110)
 		glutDisplayFunc(display);
+}
+// back về screen Game(Chính)
+void mouseClick_back_ScreenGame(int button , int state, int x, int y)
+{	
+	//tọa độ nút x trong m
+	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >=850 && x <= 895  && y >= 85 && y <=  138)
+		glutDisplayFunc(screenGame);
+}
+// Hàm mission
+void Mission()
+{
+	glutSetWindowTitle("MISSION");
+	glClear(GL_COLOR_BUFFER_BIT);
+	glLoadIdentity();
+	//_____________Start___________
+	//Load lại screen game trước để đè mission lên
+	Map_Texture(&Img_Background2);
+	Draw_Rect(&Rct_Background2); 
+	container_buttonLRB();
+	// load filter
+	Map_Texture(&Img_filter_lock);
+	Draw_Rect(&filter_lock1); // lock tầng 1
+	Draw_Rect(&filter_lock2);
+	Map_Texture(&Img_Mission);
+	Draw_Rect(&Rct_label_Mission);
+	
+	
+	glutMouseFunc(mouseClick_back_ScreenGame);
+	//_____________End_____________
+	glutSwapBuffers();
 }
 //exitgame
 void Exit()
