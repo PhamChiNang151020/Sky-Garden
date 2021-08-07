@@ -36,9 +36,16 @@ int potclick  = 0;
 struct Pot{int x,y,z,c;};
 //  vị trí của chậu 1 ở 4 arrow
 Pot pot[4] = {pot[0].x = 400           , pot[0].y = xPot1+400, pot[0].z = yPot1 + 450,pot[0].c = 450, 
-			  pot[1].x = pot[0].x + 200, pot[1].y = xPot1+600, pot[1].z = yPot1 + 450,pot[1].c = 450,
+			  pot[1].x = pot[0].x + 200, pot[1].y = xPot1+600, pot[1].z = yPot1 + 650,pot[1].c = 450,
 	          pot[2].x = pot[0].x + 400, pot[2].y = xPot1+800, pot[2].z = yPot1 + 450,pot[2].c = 450,
 	          pot[3].x = pot[0].x + 600, pot[3].y = xPot1+1000, pot[3].z = yPot1 + 450,pot[3].c = 450};
+struct T{int x,y,z,c;};
+//T là vị trí load chậu trong container
+T t[3] = {// Tọa độ của 3pot/seed/trangtri
+			  t[0].x= 0,t[0].y=0,t[0].z = 0, t[0].c= 0,
+			  t[1].x= 0,t[1].y=0,t[1].z = 0, t[1].c= 0,
+			  t[2].x= 0,t[2].y=0,t[2].z = 0, t[2].c= 0,
+			};
 
 
 					// Trái Phải dưới trên 
@@ -345,7 +352,7 @@ void mouseClick_close_Mission(int button , int state, int x, int y)
 {	
 	//tọa độ nút x trong m
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >=850 && x <= 895  && y >= 85 && y <=  138)
-		glutDisplayFunc(screenGame2);
+		glutDisplayFunc(screenGame1);
 }
 // Hàm mission
 void Mission()
