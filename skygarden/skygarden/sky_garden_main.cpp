@@ -12,7 +12,7 @@
 #include <process_image.h>
 #include <gl\gl_texture.h>
 
-//Năng
+//Tùng
 
 using namespace std;
 //Kích thước màn hình
@@ -22,19 +22,24 @@ using namespace std;
 #define INTERVAL 15
 // ?? Phong viết cô ơi
 #define CLOUD_COUNT 3
-//Size của chậu
-int xPot = 56, yPot = 60;
+//Size của 3 chậu
+int xPot1 = 56, yPot1 = 60;
+int xPot2 = 58, yPot2 = 57;
+int xPot3 = 65, yPot3 = 62;
 //Biến vị trí màn hình
 int status;
 //Biến chậu
-int chau = 0;
+int arrowclick = 0;
+int potclick  = 0;
 
 // Khai báo struct lưu giá trị của chậu
 struct Pot{int x,y,z,c;};
-Pot pot[4] = {pot[0].x = 400, pot[0].y = xPot+400, pot[0].z = yPot + 450,pot[0].c = 450,
-	pot[1].x = pot[0].x + 200, pot[1].y = xPot+600, pot[1].z = yPot + 450,pot[1].c = 450,
-	pot[2].x = pot[0].x + 400, pot[2].y = xPot+800, pot[2].z = yPot + 450,pot[2].c = 450,
-	pot[3].x = pot[0].x + 600, pot[3].y = xPot+1000, pot[3].z = yPot + 450,pot[3].c = 450};
+//  vị trí của chậu 1 ở 4 arrow
+Pot pot[4] = {pot[0].x = 400           , pot[0].y = xPot1+400, pot[0].z = yPot1 + 450,pot[0].c = 450, 
+			  pot[1].x = pot[0].x + 200, pot[1].y = xPot1+600, pot[1].z = yPot1 + 450,pot[1].c = 450,
+	          pot[2].x = pot[0].x + 400, pot[2].y = xPot1+800, pot[2].z = yPot1 + 450,pot[2].c = 450,
+	          pot[3].x = pot[0].x + 600, pot[3].y = xPot1+1000, pot[3].z = yPot1 + 450,pot[3].c = 450};
+
 
 					// Trái Phải dưới trên 
 Rect	Rct_Background = {0, 1280, 720,0}, //Màn hình menu
@@ -71,14 +76,14 @@ Rect    //icon
 		icon_avt={400,54+400,35+640,640},
 		icon_star={400,30+400,29+608,608},
 		//btn mũi tên (Nơi đặt chậu hoa)
-		Rct_btn_Arrow={pot[0].x,pot[0].y,pot[0].z,pot[0].c},
+		Rct_btn_Arrow ={pot[0].x,pot[0].y,pot[0].z,pot[0].c},
 		Rct_btn_Arrow1={pot[1].x,pot[1].y,pot[1].z,pot[1].c},
 		Rct_btn_Arrow2={pot[2].x,pot[2].y,pot[2].z,pot[2].c},
 		Rct_btn_Arrow3={pot[3].x,pot[3].y,pot[3].z,pot[3].c},
 		// chau hoa trong container
-		Rct_pot_Type1 = {600,xPot+600,yPot + 612,612}, // chậu bạc
-		Rct_pot_Type2 = {}, // chậu vàng
-		Rct_pot_Type3 = {}, // chậu đỏ
+		Rct_pot_Type1 = {600,xPot1+600,yPot1 + 612,612}, // chậu bạc
+		Rct_pot_Type2 = {700,xPot2+700,yPot2 + 615,615}, // chậu vàng
+		Rct_pot_Type3 = {800,xPot3+800,yPot3 + 612,612}, // chậu đỏ
 	// hoa và hạt
 		Rct_seed = {}, // hạt
 		Rct_germ = {}, // mầm
@@ -96,7 +101,7 @@ Image	Img_Background, Img_Background2, Img_HelpScreen, Img_ShopScreen, // nền
 		Img_Exit_YesNo, //Cửa sổ exit
 		Img_Buy, Img_Back, //bt back, buy
 		Img_Shop, Img_List,Img_Bag, //ảnh btn phải
-		Img_Water_bottle, Img_Harvest, Img_Xeng, //ảnh btn trái
+		Img_Water_bottle, Img_Harvest, Img_Shovel, //ảnh btn trái
 		Img_Pot1,Img_Pot2,Img_Pot3, //ảnh của 3 loại chậu
 		//Pot1 = chậu bạc = type1
 		//Pot2 = chậu vàng = type2
@@ -113,7 +118,8 @@ Image	Img_Background, Img_Background2, Img_HelpScreen, Img_ShopScreen, // nền
 		Img_Arrow, //ảnh mũi tên
 		Img_Mission; // ảnh nhiệm vụ
 		//icon avt
-Image	Img_icon_star, Img_icon_avt;
+Image	Img_icon_star, Img_icon_avt,
+		Img_tam;
 
 
 // khai báo
@@ -209,7 +215,7 @@ void Init_InGame(){
 	//Load button Left
 	Load_Texture_Swap(&Img_Water_bottle,"Images/btn-Water-Bottle.png");
 	Load_Texture_Swap(&Img_Harvest,"Images/btn-Harvest.png");
-	Load_Texture_Swap(&Img_Xeng,"Images/btn-Shovel.png");
+	Load_Texture_Swap(&Img_Shovel,"Images/btn-Shovel.png");
 	//Load chậu trong container
 	Load_Texture_Swap(&Img_Pot1,"Images/Pot1.png");
 	Load_Texture_Swap(&Img_Pot2,"Images/Pot2.png");
@@ -267,7 +273,7 @@ void display()
 	glutSwapBuffers();
 }
 // khi chọn no trong cửa sổ exit
-// back xanh
+// back xanh lá - chuyển màn hình shop - xử lí click đặt chậu - click mission
 void mouseClick_back(int button , int state, int x, int y)
 {
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 20 && x <= 70 && y >= 20  && y <= 95 && status == 0 )
@@ -286,17 +292,34 @@ void mouseClick_back(int button , int state, int x, int y)
 		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= pot[i].x && x <= pot[i].y && y >= pot[i].c && y <= pot[i].z && status == 0 )
 		{
 		//load chau trong table
-		cout << "click dat chau";
+		cout << "click dat chau\n";
 		cout << i;
-		chau = i;
+		arrowclick = i;
 		glutDisplayFunc(screenGame1);
 		glutPostRedisplay();
 		}
 	}
-	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 600 && x <= 660 && y >= 606 && y <= 676 )
-	{
-		glutDisplayFunc(screenGame2);
-	}
+
+	//Rct_pot_Type1 = {600,xPot1+600,yPot1 + 612,612}, // chậu bạc
+		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 600 && x <= 660 && y >= 606 && y <= 676 )
+		{
+			potclick = 1;
+			glutDisplayFunc(screenGame2);
+		}
+	//Rct_pot_Type2 = {700,xPot2+700,yPot2 + 615,615}, // chậu vàng int xPot2 = 58, yPot2 = 57;
+		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 700 && x <= 758 && y >= 615  && y <= 672 )
+		{
+			potclick = 2;
+			glutDisplayFunc(screenGame2);
+		}
+	//Rct_pot_Type3 = {800,xPot3+800,yPot3 + 612,612}, // chậu đỏ int xPot3 = 65, yPot3 = 62;
+		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 800 && x <= 865 && y >= 612 && y <=  674 )
+		{
+			potclick = 3;
+			glutDisplayFunc(screenGame2);
+		}
+	
+	
 	//Load Mission 1170,76+1170,79+190,190
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 1170 && x <= 76+1170  && y >= 190 && y <=  79+190)
 		glutDisplayFunc(Mission);
@@ -330,11 +353,35 @@ void Mission()
 	//Load lại screen game trước để đè mission lên
 	Map_Texture(&Img_Background2);
 	Draw_Rect(&Rct_Background2); 
-	container_buttonLRB();
+	//container_buttonLRB();
+	//load container
+	Map_Texture(&Img_Container);
+	Draw_Rect(&Rct_label_Container);
+	//Load icon botton
+	Map_Texture(&Img_icon_avt);
+	Draw_Rect(&icon_avt);
+	Map_Texture(&Img_icon_star);
+	Draw_Rect(&icon_star);
+	//Load button Right
+	Map_Texture(&Img_Shop);
+	Draw_Rect(&Rct_btn_Shop);
+	Map_Texture(&Img_List);
+	Draw_Rect(&Rct_btn_List);
+	Map_Texture(&Img_Bag);
+	Draw_Rect(&Rct_btn_Bag);
+	//Load button Left
+	Map_Texture(&Img_Water_bottle);
+	Draw_Rect(&Rct_btn_Water_Bottle);
+	Map_Texture(&Img_Harvest);
+	Draw_Rect(&Rct_btn_Harvest);
+	Map_Texture(&Img_Shovel);
+	Draw_Rect(&Rct_btn_Shovel);
+	//
 	// load filter
 	Map_Texture(&Img_filter_lock);
 	Draw_Rect(&filter_lock1); // lock tầng 1
-	Draw_Rect(&filter_lock2);
+	Draw_Rect(&filter_lock2); // lock tầng 2
+	// cửa sổ nhiệm vụ
 	Map_Texture(&Img_Mission);
 	Draw_Rect(&Rct_label_Mission);
 	
@@ -417,7 +464,7 @@ void container_buttonLRB()
 	Draw_Rect(&Rct_btn_Water_Bottle);
 	Map_Texture(&Img_Harvest);
 	Draw_Rect(&Rct_btn_Harvest);
-	Map_Texture(&Img_Xeng);
+	Map_Texture(&Img_Shovel);
 	Draw_Rect(&Rct_btn_Shovel);
 }
 // màn hiện mũi tên
@@ -438,7 +485,31 @@ void screenGame()
 	//Load button back
 	Map_Texture(&Img_Back);
 	Draw_Rect(&Rct_btn_Back);
-	container_buttonLRB();
+
+	//container_buttonLRB();
+	//load container
+	Map_Texture(&Img_Container);
+	Draw_Rect(&Rct_label_Container);
+	//Load icon botton
+	Map_Texture(&Img_icon_avt);
+	Draw_Rect(&icon_avt);
+	Map_Texture(&Img_icon_star);
+	Draw_Rect(&icon_star);
+	//Load button Right
+	Map_Texture(&Img_Shop);
+	Draw_Rect(&Rct_btn_Shop);
+	Map_Texture(&Img_List);
+	Draw_Rect(&Rct_btn_List);
+	Map_Texture(&Img_Bag);
+	Draw_Rect(&Rct_btn_Bag);
+	//Load button Left
+	Map_Texture(&Img_Water_bottle);
+	Draw_Rect(&Rct_btn_Water_Bottle);
+	Map_Texture(&Img_Harvest);
+	Draw_Rect(&Rct_btn_Harvest);
+	Map_Texture(&Img_Shovel);
+	Draw_Rect(&Rct_btn_Shovel);
+	//
 	Map_Texture(&Img_Arrow);
 	Draw_Rect(&Rct_btn_Arrow);
 	Draw_Rect(&Rct_btn_Arrow1);
@@ -462,7 +533,7 @@ void screenGame1()
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 	status = 0;
-	cout << chau;
+	cout << arrowclick;
 	//_____________Start_____________
 	//Load bg
 	Load_Texture_Swap(&Img_Background2,"Images/bg2.png");
@@ -495,27 +566,30 @@ void screenGame1()
 	Draw_Rect(&icon_avt);
 	Map_Texture(&Img_icon_star);
 	Draw_Rect(&icon_star);
-	//Load button Left
+	// load btn-left(water-harvest-)
 	Map_Texture(&Img_Water_bottle);
 	Draw_Rect(&Rct_btn_Water_Bottle);
 	Map_Texture(&Img_Harvest);
 	Draw_Rect(&Rct_btn_Harvest);
-	Map_Texture(&Img_Xeng);
+	Map_Texture(&Img_Shovel);
 	Draw_Rect(&Rct_btn_Shovel);
-	// store
+	// load btn-right(shop - bag - list)
 	Map_Texture(&Img_Shop);
 	Draw_Rect(&Rct_btn_Shop);
-	//Load bag
 	Map_Texture(&Img_Bag);
 	Draw_Rect(&Rct_btn_Bag);
-	//Load quest
 	Map_Texture(&Img_List);
 	Draw_Rect(&Rct_btn_List);
 
-	//Load table
+	//Load loại chậu
 	
 	Map_Texture(&Img_Pot1);
 	Draw_Rect(&Rct_pot_Type1);
+	Map_Texture(&Img_Pot2);
+	Draw_Rect(&Rct_pot_Type2);
+	Map_Texture(&Img_Pot3);
+	Draw_Rect(&Rct_pot_Type3);
+
 	
 	
 	glutMouseFunc(mouseClick_back);
@@ -529,9 +603,9 @@ void screenGame2()
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 	//_____________Start_____________
-	cout << chau;
+	cout << arrowclick << endl;
 	//Load bg
-	Load_Texture_Swap(&Img_Background2,"Images/bg2.png");
+	//Load_Texture_Swap(&Img_Background2,"Images/bg2.png");
 	Map_Texture(&Img_Background2);
 	Draw_Rect(&Rct_Background2);
 	
@@ -540,29 +614,34 @@ void screenGame2()
 	Draw_Rect(&filter_lock1);
 	Draw_Rect(&filter_lock2);
 
-	//Load icon botton
-	Map_Texture(&Img_icon_avt);
-	Draw_Rect(&icon_avt);
-	Map_Texture(&Img_icon_star);
-	Draw_Rect(&icon_star);
-
 	//Load button Left
 	Map_Texture(&Img_Water_bottle);
 	Draw_Rect(&Rct_btn_Water_Bottle);
 	Map_Texture(&Img_Harvest);
 	Draw_Rect(&Rct_btn_Harvest);
-	Map_Texture(&Img_Xeng);
+	Map_Texture(&Img_Shovel);
 	Draw_Rect(&Rct_btn_Shovel);
 
 	//Load button back
 	Map_Texture(&Img_Back);
 	Draw_Rect(&Rct_btn_Back);
 	//goi bt back
-	
+	if(potclick == 1)
+	{
+		Img_tam = Img_Pot1;
+	}
+	else if(potclick == 2)
+	{
+		Img_tam = Img_Pot2;
+	}
+	else 
+	{
+		Img_tam = Img_Pot3;
+	}
 	//Load chau hoa
-	if(chau == 0 ){
+	if(arrowclick == 0 ){
 
-	Map_Texture(&Img_Pot1);
+	Map_Texture(&Img_tam);
 	Draw_Rect(&Rct_btn_Arrow);
 	
 	Map_Texture(&Img_Arrow);
@@ -575,12 +654,12 @@ void screenGame2()
 	Draw_Rect(&Rct_btn_Arrow3);
 
 	}
-	if(chau == 1)
+	if(arrowclick == 1)
 	{
 		Map_Texture(&Img_Arrow);
 		Draw_Rect(&Rct_btn_Arrow);
 
-		Map_Texture(&Img_Pot1);
+		Map_Texture(&Img_tam);
 		Draw_Rect(&Rct_btn_Arrow1);
 
 		Map_Texture(&Img_Arrow);
@@ -589,7 +668,7 @@ void screenGame2()
 		Map_Texture(&Img_Arrow);
 		Draw_Rect(&Rct_btn_Arrow3);
 	}
-	if(chau == 2)
+	if(arrowclick == 2)
 	{
 		Map_Texture(&Img_Arrow);
 		Draw_Rect(&Rct_btn_Arrow);
@@ -597,13 +676,13 @@ void screenGame2()
 		Map_Texture(&Img_Arrow);
 		Draw_Rect(&Rct_btn_Arrow1);
 
-		Map_Texture(&Img_Pot1);
+		Map_Texture(&Img_tam);
 		Draw_Rect(&Rct_btn_Arrow2);
 
 		Map_Texture(&Img_Arrow);
 		Draw_Rect(&Rct_btn_Arrow3);
 	}
-	if(chau == 3)
+	if(arrowclick == 3)
 	{
 		Map_Texture(&Img_Arrow);
 		Draw_Rect(&Rct_btn_Arrow);
@@ -614,15 +693,19 @@ void screenGame2()
 		Map_Texture(&Img_Arrow);
 		Draw_Rect(&Rct_btn_Arrow2);
 
-		Map_Texture(&Img_Pot1);
+		Map_Texture(&Img_tam);
 		Draw_Rect(&Rct_btn_Arrow3);
 	}
 	
-	//Load table
+	//Load container
 	Map_Texture(&Img_Container);
 	Draw_Rect(&Rct_label_Container);
 	Map_Texture(&Img_Pot1);
 	Draw_Rect(&Rct_pot_Type1);
+	Map_Texture(&Img_Pot2);
+	Draw_Rect(&Rct_pot_Type2);
+	Map_Texture(&Img_Pot3);
+	Draw_Rect(&Rct_pot_Type3);
 	// store
 	Map_Texture(&Img_Shop);
 	Draw_Rect(&Rct_btn_Shop);
@@ -632,6 +715,12 @@ void screenGame2()
 	//Load quest
 	Map_Texture(&Img_List);
 	Draw_Rect(&Rct_btn_List);
+	//
+	//Load icon botton
+	Map_Texture(&Img_icon_avt);
+	Draw_Rect(&icon_avt);
+	Map_Texture(&Img_icon_star);
+	Draw_Rect(&icon_star);
 	//Load store
 	glutMouseFunc(mouseClick_back);
 	glutTimerFunc(0,Timer,0);
