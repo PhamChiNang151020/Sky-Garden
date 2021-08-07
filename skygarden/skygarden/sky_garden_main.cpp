@@ -29,18 +29,29 @@ int xPot3 = 65, yPot3 = 62;
 //Biến vị trí màn hình
 int status;
 //Biến chậu
-int arrowclick = 0;
+//int arrowclick = 0;
 int potclick  = 0;
 
-// Khai báo struct lưu giá trị của chậu
-struct Pot{int x,y,z,c;};
+// Khai báo struct có 4 giá trị kiểu int
+struct Pot{int x,y,z,c,pla;};
+// xác định lần click
+struct determined_arrow_click{int cl1,cl2;};
+//đếm lượt click trong 2 lần click
+int cacl1 = 0; // count_arrow_click1
+int cacl2 = 0; // count_arrow_click1
+//đếm số lần gán hình
+int map_pic = -1;
 //  vị trí của chậu 1 ở 4 arrow
-Pot pot[4] = {pot[0].x = 400           , pot[0].y = xPot1+400, pot[0].z = yPot1 + 450,pot[0].c = 450, 
-			  pot[1].x = pot[0].x + 200, pot[1].y = xPot1+600, pot[1].z = yPot1 + 450,pot[1].c = 450,
-	          pot[2].x = pot[0].x + 400, pot[2].y = xPot1+800, pot[2].z = yPot1 + 450,pot[2].c = 450,
-	          pot[3].x = pot[0].x + 600, pot[3].y = xPot1+1000, pot[3].z = yPot1 + 450,pot[3].c = 450};
+Pot pot[4] = {pot[0].x = 400           , pot[0].y = xPot1+400, pot[0].z = yPot1 + 450,pot[0].c = 450, pot[0].pla = 0,
+			  pot[1].x = pot[0].x + 200, pot[1].y = xPot1+600, pot[1].z = yPot1 + 450,pot[1].c = 450, pot[1].pla = 0,
+	          pot[2].x = pot[0].x + 400, pot[2].y = xPot1+800, pot[2].z = yPot1 + 450,pot[2].c = 450, pot[2].pla = 0,
+	          pot[3].x = pot[0].x + 600, pot[3].y = xPot1+1000, pot[3].z = yPot1 + 450,pot[3].c = 450, pot[3].pla = 0};
 
-
+determined_arrow_click arrowclick[2] = { arrowclick[0].cl1 = -1,arrowclick[0].cl1 = -1,
+									arrowclick[1].cl2 = -1,arrowclick[1].cl2 = -1};
+//struct mảng ảnh trung gian
+struct PicChange{Image img;}; //số thứ tự là số lần gọi hình trung gian gán cho mũi tên 
+PicChange IMG_CHANGE[4];
 					// Trái Phải dưới trên 
 Rect	Rct_Background = {0, 1280, 720,0}, //Màn hình menu
 		Rct_Background2 = {0, 1280, 720,0}, //Màn hình ingame(chính)
@@ -120,8 +131,7 @@ Image	Img_Background, Img_Background2, Img_HelpScreen, Img_ShopScreen, // nền
 		//icon avt
 Image	Img_icon_star, Img_icon_avt,
 		Img_tam;
-
-
+		
 // khai báo
 void Init_Menu();
 void Init_InGame();
@@ -286,36 +296,39 @@ void mouseClick_back(int button , int state, int x, int y)
 	//Chuyển qua màn hình shop
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 1170 && x <= 81+1170 && y >= 100 && y <= 76+100 && status == 0)
 		glutDisplayFunc(screenShop);
-	//
-	for(int i = 0; i < 4;i++)
+	//click lần 1 dùng struct arrowclick[0] để kiểm soát
+	for(int i = 0;i < 4;i++)
 	{
-		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= pot[i].x && x <= pot[i].y && y >= pot[i].c && y <= pot[i].z && status == 0 )
+		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= pot[i].x && x <= pot[i].y && y >= pot[i].c && y <= pot[i].z && status == 0 &&  pot[i].pla == 0 )
 		{
 		//load chau trong table
 		cout << "click dat chau\n";
 		cout << i;
-		arrowclick = i;
+		arrowclick[0].cl1 = i;
 		glutDisplayFunc(screenGame1);
 		glutPostRedisplay();
 		}
 	}
 
 	//Rct_pot_Type1 = {600,xPot1+600,yPot1 + 612,612}, // chậu bạc
-		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 600 && x <= 660 && y >= 606 && y <= 676 )
+	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 600 && x <= 660 && y >= 606 && y <= 676 )
 		{
 			potclick = 1;
+			map_pic += 1;
 			glutDisplayFunc(screenGame2);
 		}
 	//Rct_pot_Type2 = {700,xPot2+700,yPot2 + 615,615}, // chậu vàng int xPot2 = 58, yPot2 = 57;
-		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 700 && x <= 758 && y >= 615  && y <= 672 )
+	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 700 && x <= 758 && y >= 615  && y <= 672 )
 		{
 			potclick = 2;
+			map_pic += 1;
 			glutDisplayFunc(screenGame2);
 		}
 	//Rct_pot_Type3 = {800,xPot3+800,yPot3 + 612,612}, // chậu đỏ int xPot3 = 65, yPot3 = 62;
 		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 800 && x <= 865 && y >= 612 && y <=  674 )
 		{
 			potclick = 3;
+			map_pic += 1;
 			glutDisplayFunc(screenGame2);
 		}
 	
@@ -536,7 +549,7 @@ void screenGame1()
 	cout << arrowclick;
 	//_____________Start_____________
 	//Load bg
-	Load_Texture_Swap(&Img_Background2,"Images/bg2.png");
+	//Load_Texture_Swap(&Img_Background2,"Images/bg2.png");
 	Map_Texture(&Img_Background2);
 	Draw_Rect(&Rct_Background2);
 	
@@ -552,15 +565,41 @@ void screenGame1()
 	Map_Texture(&Img_Container);
 	Draw_Rect(&Rct_label_Container);
 	//Load chau hoa
+
 	Map_Texture(&Img_Arrow);
 	Draw_Rect(&Rct_btn_Arrow);
+
 	Map_Texture(&Img_Arrow);
 	Draw_Rect(&Rct_btn_Arrow1);
+
 	Map_Texture(&Img_Arrow);
 	Draw_Rect(&Rct_btn_Arrow2);
+
 	Map_Texture(&Img_Arrow);
 	Draw_Rect(&Rct_btn_Arrow3);
 
+	//Tùngu
+				if( pot[0].pla == 1 )
+				{
+					Map_Texture(&IMG_CHANGE[0].img);
+					Draw_Rect(&Rct_btn_Arrow);
+				}
+				if( pot[1].pla == 1 )
+				{
+					Map_Texture(&IMG_CHANGE[1].img);
+					Draw_Rect(&Rct_btn_Arrow1);
+				}
+				if( pot[2].pla == 1 )
+				{
+					Map_Texture(&IMG_CHANGE[2].img);
+					Draw_Rect(&Rct_btn_Arrow2);
+				}
+				if( pot[3].pla == 1 )
+				{
+					Map_Texture(&IMG_CHANGE[3].img);
+					Draw_Rect(&Rct_btn_Arrow3);
+				}
+	
 	//Load icon botton
 	Map_Texture(&Img_icon_avt);
 	Draw_Rect(&icon_avt);
@@ -625,76 +664,174 @@ void screenGame2()
 	//Load button back
 	Map_Texture(&Img_Back);
 	Draw_Rect(&Rct_btn_Back);
-	//goi bt back
-	if(potclick == 1)
+
+	//số lần gọi screen2
+	
+	//goi btn back
+	/*for (int i = 0; i < 4; i++)
 	{
-		Img_tam = Img_Pot1;
-	}
-	else if(potclick == 2)
-	{
-		Img_tam = Img_Pot2;
-	}
-	else 
-	{
-		Img_tam = Img_Pot3;
-	}
+		if(map_pic == i)
+			{
+				if(potclick == 1)
+				{
+					IMG_CHANGE[i].img = Img_Pot1;
+				}
+				else if(potclick == 2)
+				{
+					IMG_CHANGE[i].img = Img_Pot2;
+				}
+				else 
+				{
+					IMG_CHANGE[i].img = Img_Pot3;
+				}	
+			}
+	}*/
+				if(potclick == 1)
+				{
+					Img_tam = Img_Pot1;
+				}
+				else if(potclick == 2)
+				{
+					Img_tam = Img_Pot2;
+				}
+				else 
+				{
+					Img_tam = Img_Pot3;
+				}	
+	
+
 	//Load chau hoa
-	if(arrowclick == 0 ){
+	if(arrowclick[0].cl1 == 0 ){
+			Map_Texture(&Img_tam);
+			Draw_Rect(&Rct_btn_Arrow);
+	
+			Map_Texture(&Img_Arrow);
+			Draw_Rect(&Rct_btn_Arrow1);
+	
+			Map_Texture(&Img_Arrow);
+			Draw_Rect(&Rct_btn_Arrow2);
+	
+			Map_Texture(&Img_Arrow);
+			Draw_Rect(&Rct_btn_Arrow3);
 
-	Map_Texture(&Img_tam);
-	Draw_Rect(&Rct_btn_Arrow);
-	
-	Map_Texture(&Img_Arrow);
-	Draw_Rect(&Rct_btn_Arrow1);
-	
-	Map_Texture(&Img_Arrow);
-	Draw_Rect(&Rct_btn_Arrow2);
-	
-	Map_Texture(&Img_Arrow);
-	Draw_Rect(&Rct_btn_Arrow3);
+			IMG_CHANGE[0].img = Img_tam;
+			pot[0].pla = 1;
+
+				if( pot[1].pla == 1 )
+				{
+					Map_Texture(&IMG_CHANGE[1].img);
+					Draw_Rect(&Rct_btn_Arrow1);
+				}
+				if( pot[2].pla == 1 )
+				{
+					Map_Texture(&IMG_CHANGE[2].img);
+					Draw_Rect(&Rct_btn_Arrow2);
+				}
+				if( pot[3].pla == 1 )
+				{
+					Map_Texture(&IMG_CHANGE[3].img);
+					Draw_Rect(&Rct_btn_Arrow3);
+				}
 
 	}
-	if(arrowclick == 1)
+	if(arrowclick[0].cl1 == 1)
+	{
+				Map_Texture(&Img_Arrow);
+				Draw_Rect(&Rct_btn_Arrow);
+
+				Map_Texture(&Img_tam);
+				Draw_Rect(&Rct_btn_Arrow1);
+
+				Map_Texture(&Img_Arrow);
+				Draw_Rect(&Rct_btn_Arrow2);
+
+				Map_Texture(&Img_Arrow);
+				Draw_Rect(&Rct_btn_Arrow3);
+				IMG_CHANGE[1].img = Img_tam;
+				pot[1].pla = 1;
+					if( pot[0].pla == 1 )
+					{
+						Map_Texture(&IMG_CHANGE[0].img);
+						Draw_Rect(&Rct_btn_Arrow);
+					}
+					if( pot[2].pla == 1 )
+					{
+						Map_Texture(&IMG_CHANGE[2].img);
+						Draw_Rect(&Rct_btn_Arrow2);
+					}
+					if( pot[3].pla == 1 )
+					{
+						Map_Texture(&IMG_CHANGE[3].img);
+						Draw_Rect(&Rct_btn_Arrow3);
+					}
+
+	}
+	if(arrowclick[0].cl1 == 2)
 	{
 		Map_Texture(&Img_Arrow);
 		Draw_Rect(&Rct_btn_Arrow);
 
-		Map_Texture(&Img_tam);
+		Map_Texture(&Img_Arrow);
 		Draw_Rect(&Rct_btn_Arrow1);
 
-		Map_Texture(&Img_Arrow);
+		Map_Texture(&Img_tam);
 		Draw_Rect(&Rct_btn_Arrow2);
 
 		Map_Texture(&Img_Arrow);
 		Draw_Rect(&Rct_btn_Arrow3);
+
+		IMG_CHANGE[2].img = Img_tam;
+		pot[2].pla = 1;
+			if( pot[0].pla == 1 )
+			{
+				Map_Texture(&IMG_CHANGE[0].img);
+				Draw_Rect(&Rct_btn_Arrow);
+			}
+			if( pot[1].pla == 1 )
+			{
+				Map_Texture(&IMG_CHANGE[1].img);
+				Draw_Rect(&Rct_btn_Arrow1);
+			}
+	
+			if( pot[3].pla == 1 )
+			{
+				Map_Texture(&IMG_CHANGE[3].img);
+				Draw_Rect(&Rct_btn_Arrow3);
+			}
+		
 	}
-	if(arrowclick == 2)
+	if(arrowclick[0].cl1 == 3)
 	{
-		Map_Texture(&Img_Arrow);
-		Draw_Rect(&Rct_btn_Arrow);
+			Map_Texture(&Img_Arrow);
+			Draw_Rect(&Rct_btn_Arrow);
 
-		Map_Texture(&Img_Arrow);
-		Draw_Rect(&Rct_btn_Arrow1);
+			Map_Texture(&Img_Arrow);
+			Draw_Rect(&Rct_btn_Arrow1);
 
-		Map_Texture(&Img_tam);
-		Draw_Rect(&Rct_btn_Arrow2);
+			Map_Texture(&Img_Arrow);
+			Draw_Rect(&Rct_btn_Arrow2);
 
-		Map_Texture(&Img_Arrow);
-		Draw_Rect(&Rct_btn_Arrow3);
-	}
-	if(arrowclick == 3)
-	{
-		Map_Texture(&Img_Arrow);
-		Draw_Rect(&Rct_btn_Arrow);
+			Map_Texture(&Img_tam);
+			Draw_Rect(&Rct_btn_Arrow3);
 
-		Map_Texture(&Img_Arrow);
-		Draw_Rect(&Rct_btn_Arrow1);
+			IMG_CHANGE[3].img = Img_tam;
+			pot[3].pla = 1;
 
-		Map_Texture(&Img_Arrow);
-		Draw_Rect(&Rct_btn_Arrow2);
-
-		Map_Texture(&Img_tam);
-		Draw_Rect(&Rct_btn_Arrow3);
+				if( pot[0].pla == 1 )
+				{
+					Map_Texture(&IMG_CHANGE[0].img);
+					Draw_Rect(&Rct_btn_Arrow);
+				}
+				if( pot[1].pla == 1 )
+				{
+					Map_Texture(&IMG_CHANGE[1].img);
+					Draw_Rect(&Rct_btn_Arrow1);
+				}
+				if( pot[2].pla == 1 )
+				{
+					Map_Texture(&IMG_CHANGE[2].img);
+					Draw_Rect(&Rct_btn_Arrow2);
+				}
 	}
 	
 	//Load container
@@ -716,6 +853,7 @@ void screenGame2()
 	Map_Texture(&Img_List);
 	Draw_Rect(&Rct_btn_List);
 	//
+	
 	//Load icon botton
 	Map_Texture(&Img_icon_avt);
 	Draw_Rect(&icon_avt);
