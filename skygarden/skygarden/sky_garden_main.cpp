@@ -27,7 +27,7 @@ int xPot1 = 56, yPot1 = 60;
 int xPot2 = 58, yPot2 = 57;
 int xPot3 = 65, yPot3 = 62;
 //Biến vị trí màn hình
-int status;
+int status, manhinh;
 //Biến chậu
 int arrowclick = 0;
 int potclick  = 0;
@@ -276,14 +276,18 @@ void display()
 // back xanh lá - chuyển màn hình shop - xử lí click đặt chậu - click mission
 void mouseClick_back(int button , int state, int x, int y)
 {
+	// Click btn back, chuyển sang màn hình Display với stt = 0 = màn hình screenGame
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 20 && x <= 70 && y >= 20  && y <= 95 && status == 0 )
     {
         glutDisplayFunc(display);
     }
-	//Trả về màn hình game
+	//click btn back, chuyển từ Shop về screenGame với stt = 1 = màn hình Shop
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN &&x >= 20 && x <= 70 && y >= 20  && y <= 95 && status == 1 )
 		glutDisplayFunc(screenGame);
-	//Chuyển qua màn hình shop
+	// Click btn back chuyển từ Shop về screen2,
+	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN &&x >= 20 && x <= 70 && y >= 20  && y <= 95 && status == 1 && manhinh == 1)
+		glutDisplayFunc(screenGame2);
+	//Khi click vào icon Shop chuyển màn hình sang Shop
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 1170 && x <= 81+1170 && y >= 100 && y <= 76+100 && status == 0)
 		glutDisplayFunc(screenShop);
 	//
@@ -326,7 +330,7 @@ void mouseClick_back(int button , int state, int x, int y)
 	glutPostRedisplay();
 }
 // click newgame
-void mouseClick_back_display(int button , int state, int x, int y)
+void mouseClick_close_Exit(int button , int state, int x, int y)
 {
 	//yes
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 495 && x <= 495+110  && y >= 380 && y <=  380+110)
@@ -412,7 +416,7 @@ void Exit()
 	Map_Texture(&Img_Exit_YesNo);
 	Draw_Rect(&Rct_Exit_YesNo); 
 
-	glutMouseFunc(mouseClick_back_display);
+	glutMouseFunc(mouseClick_close_Exit);
 
 	//_____________End_____________
 	glutSwapBuffers();
@@ -427,7 +431,7 @@ void mouseClick(int button , int state, int x, int y)
 	// Continue
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 150 && x <= 400 && y >= 575 && y <= 650)
 	{
-		glutDisplayFunc(screenGame2);
+		//glutDisplayFunc(screenGame2);
 	}
 	//Help
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 880 && x <= 1130 &&  y >= 475 && y <= 550)
@@ -603,8 +607,11 @@ void screenGame2()
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 	//_____________Start_____________
+
+	status = 0; // Sử dụng cho btn back(tương tự như screenGame, để back về display)
+
+	glutMouseFunc(mouseClick_back);
 	cout << arrowclick << endl;
-	//Load bg
 	//Load_Texture_Swap(&Img_Background2,"Images/bg2.png");
 	Map_Texture(&Img_Background2);
 	Draw_Rect(&Rct_Background2);
@@ -749,6 +756,7 @@ void screenShop()
 {
 	glutSetWindowTitle("SHOP");
 	status = 1;
+	manhinh= 1;
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 	//_____________Start___________
