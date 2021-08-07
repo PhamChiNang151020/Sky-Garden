@@ -435,7 +435,7 @@ void mouseClick(int button , int state, int x, int y)
 {
 	//NEW GAME
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >=150 && x <= 400  && y >= 475 && y <=  550)
-		glutDisplayFunc(screenGame1);
+		glutDisplayFunc(screenGame);
 
 	// Continue
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 150 && x <= 400 && y >= 575 && y <= 650)
