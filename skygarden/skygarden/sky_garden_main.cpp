@@ -278,6 +278,7 @@ void Init_Menu()
 	Load_Texture_Swap(&Img_Help,"Images/bt-Help.png");
 	Load_Texture_Swap(&Img_Exit,"Images/bt-Exit.png");
 }
+// màn hình menu
 void display()
 {
 	glutSetWindowTitle("SKY GARDEN");
