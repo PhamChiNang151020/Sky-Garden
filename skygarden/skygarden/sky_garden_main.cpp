@@ -292,7 +292,7 @@ void mouseClick_back(int button , int state, int x, int y)
     }
 	//Trả về màn hình game
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN &&x >= 20 && x <= 70 && y >= 20  && y <= 95 && status == 1 )
-		glutDisplayFunc(screenGame);
+		glutDisplayFunc(screenGame1);
 	//Chuyển qua màn hình shop
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 1170 && x <= 81+1170 && y >= 100 && y <= 76+100 && status == 0)
 		glutDisplayFunc(screenShop);
@@ -354,7 +354,7 @@ void mouseClick_back_ScreenGame(int button , int state, int x, int y)
 {	
 	//tọa độ nút x trong m
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >=850 && x <= 895  && y >= 85 && y <=  138)
-		glutDisplayFunc(screenGame);
+		glutDisplayFunc(screenGame1);
 }
 // Hàm mission
 void Mission()
@@ -435,7 +435,7 @@ void mouseClick(int button , int state, int x, int y)
 {
 	//NEW GAME
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >=150 && x <= 400  && y >= 475 && y <=  550)
-		glutDisplayFunc(screenGame);
+		glutDisplayFunc(screenGame1);
 
 	// Continue
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 150 && x <= 400 && y >= 575 && y <= 650)
