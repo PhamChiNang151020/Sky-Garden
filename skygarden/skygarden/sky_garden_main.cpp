@@ -30,12 +30,18 @@ int xPot3 = 65, yPot3 = 62;
 int status;
 //Biến chậu
 //int arrowclick = 0;
+//thứ tự của chậu trong container
 int potclick  = 0;
-
+// thứ tự của hoa trên các chậu
+int flclick = 0;
+// loại hoa đc chọn trên container
+int typeflclick = 0;
+// Giai đoạn của hạt
+struct Stage{int gd;};
+Stage stage[12];
 // Khai báo struct có 4 giá trị kiểu int
 struct Pot{int x,y,z,c,pla;};
 // xác định lần click
-struct determined_arrow_click{int cl1,cl2;};
 //đếm lượt click trong 2 lần click
 int cacl1 = 0; // count_arrow_click1
 int cacl2 = 0; // count_arrow_click1
@@ -43,19 +49,31 @@ int cacl2 = 0; // count_arrow_click1
 int map_pic = -1;
 //biến XY hiện 
 int XV_plant = 0;
+// xác nhận đặt chậu
 bool  yes_no = false;
-
+// xác nhận đặt hoa
+bool  yes_no_Flower = false;
+// xác nhận đang đặt hoa vào chậu đã được đặt
+bool planting = false;
+ int Xsizex = 59, Xsizey = 62, Vsizex = 58, Vsizey = 61;  
 //  vị trí của chậu 1 ở 4 arrow
 Pot pot[4] = {pot[0].x = 400           , pot[0].y = xPot1+400, pot[0].z = yPot1 + 450,pot[0].c = 450, pot[0].pla = 0,
 			  pot[1].x = pot[0].x + 200, pot[1].y = xPot1+600, pot[1].z = yPot1 + 450,pot[1].c = 450, pot[1].pla = 0,
 	          pot[2].x = pot[0].x + 400, pot[2].y = xPot1+800, pot[2].z = yPot1 + 450,pot[2].c = 450, pot[2].pla = 0,
 	          pot[3].x = pot[0].x + 600, pot[3].y = xPot1+1000, pot[3].z = yPot1 + 450,pot[3].c = 450, pot[3].pla = 0};
+Pot fl[4] = {
+				fl[0].x = 400          , fl[0].y = xPot1+400,  fl[0].z =  450 + 15,fl[0].c = 450 - yPot1 + 15, fl[0].pla = 0,
+				fl[1].x = fl[0].x + 200, fl[1].y = xPot1+600,  fl[1].z =  450 + 15,fl[1].c = 450 - yPot1 + 15, fl[1].pla = 0,
+				fl[2].x = fl[0].x + 400, fl[2].y = xPot1+800,  fl[2].z =  450 + 15,fl[2].c = 450 - yPot1 + 15, fl[2].pla = 0,
+				fl[3].x = fl[0].x + 600, fl[3].y = xPot1+1000, fl[3].z =  450 + 15,fl[3].c = 450 - yPot1 + 15, fl[3].pla = 0
+			};
+//thứ tự click
+int arrowclick = -1;
 
-determined_arrow_click arrowclick[2] = { arrowclick[0].cl1 = -1,arrowclick[0].cl1 = -1,
-									arrowclick[1].cl2 = -1,arrowclick[1].cl2 = -1};
 //struct mảng ảnh trung gian
 struct PicChange{Image img;}; //số thứ tự là số lần gọi hình trung gian gán cho mũi tên 
 PicChange IMG_CHANGE[4];
+PicChange IMG_FL_ARROW[4];
 					// Trái Phải dưới trên 
 Rect	Rct_Background = {0, 1280, 720,0}, //Màn hình menu
 		Rct_Background2 = {0, 1280, 720,0}, //Màn hình ingame(chính)
@@ -95,11 +113,19 @@ Rect    //icon
 		Rct_btn_Arrow1={pot[1].x,pot[1].y,pot[1].z,pot[1].c},
 		Rct_btn_Arrow2={pot[2].x,pot[2].y,pot[2].z,pot[2].c},
 		Rct_btn_Arrow3={pot[3].x,pot[3].y,pot[3].z,pot[3].c},
+		//btn mũi tên (Nơi đặt hoa)
+		Rct_btn_Fl ={fl[0].x,fl[0].y,fl[0].z,fl[0].c},
+		Rct_btn_Fl1={fl[1].x,fl[1].y,fl[1].z,fl[1].c},
+		Rct_btn_Fl2={fl[2].x,fl[2].y,fl[2].z,fl[2].c},
+		Rct_btn_Fl3={fl[3].x,fl[3].y,fl[3].z,fl[3].c},
 		// chau hoa trong container
 		Rct_pot_Type1 = {600,xPot1+600,yPot1 + 612,612}, // chậu bạc
 		Rct_pot_Type2 = {700,xPot2+700,yPot2 + 615,615}, // chậu vàng
 		Rct_pot_Type3 = {800,xPot3+800,yPot3 + 612,612}, // chậu đỏ
 	// hoa và hạt
+	Rct_seed_A = {600,xPot1+600,yPot1 + 612 - 70,612 - 70}, 
+	Rct_seed_B = {700,xPot2+700,yPot2 + 615 - 70,615 - 70},
+	Rct_seed_C = {800,xPot3+800,yPot3 + 612 - 70,612 - 70},
 		Rct_seed = {}, // hạt
 		Rct_germ = {}, // mầm
 		Rct_fl_A3 = {}, // hoa A giai đoạn 3 
@@ -109,8 +135,11 @@ Rect    //icon
 		Rct_fl_C3 = {}, // hoa C giai đoạn 3
 		Rct_fl_C4 = {}, // hoa C giai đoạn 4
 	// btn xác nhận đặt chậu
-		Rct_btn_X = {630 +180 +180 ,68 + 630 +180 +180,58 + 617, 617},
-		Rct_btn_V = {810 +180 +180 ,60 + 810 +180 +180,59 + 616, 616}
+	Rct_btn_X = {630 +180 +180 + 90 ,Xsizex + 630 +180 +180 +90,Xsizey + 617, 617},
+	Rct_btn_V = {810 +180 +180 ,Vsizex + 810 +180 +180,Vsizey + 616, 616},
+	// btn xác nhận đặt chậu
+	Rct_btn_X_Fl = {630 +180 +180 + 90 ,Xsizex + 630 +180 +180 +90,Xsizey + 617 - 70, 617 - 70},
+	Rct_btn_V_Fl = {810 +180 +180 ,Vsizex + 810 +180 +180,Vsizey + 616 - 70, 616 - 70}
 		;
 
 Image	Img_Background, Img_Background2, Img_HelpScreen, Img_ShopScreen, // nền
@@ -124,6 +153,9 @@ Image	Img_Background, Img_Background2, Img_HelpScreen, Img_ShopScreen, // nền
 		//Pot1 = chậu bạc = type1
 		//Pot2 = chậu vàng = type2
 		//Pot3 = chậu đỏ = type3
+	Img_seed_A,
+	Img_seed_B,
+	Img_seed_C,
 	Img_seed , // ảnh hạt
 	Img_germ , // ảnh mầm
 	Img_fl_A3 , // ảnh hoa A giai đoạn 3 
@@ -139,7 +171,7 @@ Image	Img_Background, Img_Background2, Img_HelpScreen, Img_ShopScreen, // nền
 Image	Img_icon_star, Img_icon_avt,
 		//ảnh của btn xác nhận đặt chậu
 		Img_X,Img_V,
-		Img_tam;
+		Img_tam,Img_flower,Img_stage;
 		
 		
 // khai báo
@@ -152,6 +184,7 @@ void mouseClick_back_ScreenGame(int button , int state, int x, int y);
 void mouseClick_back_display(int button , int state, int x, int y);
 void mouseClick(int button , int state, int x, int y);
 void Mission();
+void changeImg_ArrowTop();
 void changeImgYes();
 void changeImgNo();
 void load_hard_element(); // Xuất những phần tử cứng
@@ -217,11 +250,15 @@ int main(int argc, char** argv)
 	glutMainLoop();
 	return 0;
 }
-//InGame
+//khởi tạo game
 void Init_InGame(){
+	// 3 loại hạt hoa
+	Load_Texture_Swap(&Img_seed_A,"Images/Seed-A.png");
+	Load_Texture_Swap(&Img_seed_B,"Images/Seed-B.png");
+	Load_Texture_Swap(&Img_seed_C,"Images/Seed-C.png");
 	//Load X V xác định đặt chậu
-	Load_Texture_Swap(&Img_X,"Images/Seed-B.png");
-	Load_Texture_Swap(&Img_V,"Images/Seed-A.png");
+	Load_Texture_Swap(&Img_X,"Images/X.png");
+	Load_Texture_Swap(&Img_V,"Images/V.png");
 	//Load bg2
 	Load_Texture_Swap(&Img_Background2,"Images/bg2.png");
 	//Exit display
@@ -313,23 +350,23 @@ void mouseClick_back(int button , int state, int x, int y)
 	//Chuyển qua màn hình shop
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 1170 && x <= 81+1170 && y >= 100 && y <= 76+100 && status == 0)
 		glutDisplayFunc(screenShop);
-	//click lần 1 dùng struct arrowclick[0] để kiểm soát lần click thứ 1 của tất cả các arrow
+	//click lần 1 dùng struct arrowclick[0].x.y.z.c để lưu giá trị click mới thay vào thứ tự chậu 
 	for(int i = 0;i < 4;i++)
 	{
-		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= pot[i].x && x <= pot[i].y && y >= pot[i].c && y <= pot[i].z && status == 0 &&  pot[i].pla == 0 && XV_plant != 1)
+		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= pot[i].x && x <= pot[i].y && y >= pot[i].c && y <= pot[i].z 
+			&& status == 0 &&  pot[i].pla == 0 && XV_plant != 1 )
 		{
 		//load chau trong table
 		cout << "click dat chau\n";
 		cout << i;
-		arrowclick[0].cl1 = i;
+		arrowclick = i;
 		glutDisplayFunc(screenGame1);
 		glutPostRedisplay();
 		}
-	
-
 	}
 	//Rct_pot_Type1 = {600,xPot1+600,yPot1 + 612,612}, // chậu bạc
-		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 600 && x <= 660 && y >= 606 && y <= 676 && XV_plant != 1  )
+		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 600 && x <= 660 && y >= 606 && y <= 676 
+			&& XV_plant != 1 && planting == false )
 		{
 				potclick = 1;
 				map_pic += 1;
@@ -340,7 +377,8 @@ void mouseClick_back(int button , int state, int x, int y)
 			glutDisplayFunc(screenGame2);
 		}
 	//Rct_pot_Type2 = {700,xPot2+700,yPot2 + 615,615}, // chậu vàng int xPot2 = 58, yPot2 = 57;
-		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 700 && x <= 758 && y >= 615  && y <= 672 && XV_plant != 1)
+		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 700 && x <= 758 && y >= 615  && y <= 672 
+			&& XV_plant != 1 && planting == false)
 		{
 				potclick = 2;
 				map_pic += 1;
@@ -351,7 +389,8 @@ void mouseClick_back(int button , int state, int x, int y)
 			glutDisplayFunc(screenGame2);
 		}
 	//Rct_pot_Type3 = {800,xPot3+800,yPot3 + 612,612}, // chậu đỏ int xPot3 = 65, yPot3 = 62;
-		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 800 && x <= 865 && y >= 612 && y <=  674  && XV_plant != 1 )
+		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 800 && x <= 865 && y >= 612 && y <=  674  
+			&& XV_plant != 1 && planting == false)
 		{
 				potclick = 3;
 				map_pic += 1;
@@ -362,8 +401,10 @@ void mouseClick_back(int button , int state, int x, int y)
 			glutDisplayFunc(screenGame2);
 		}
 
-	//Rct_btn_X Rct_btn_X = {630,68 + 630,58 + 617, 617}, Rct_btn_V = {810,60 + 810,59 + 616, 616}
-		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 630 +180 +180 && x <= 675+180+180 && y >= 617 && y <=  675  && XV_plant != 0)
+	//Rct_btn_X = {630 +180 +180 + 90 ,Xsizex + 630 +180 +180 +90,Xsizey + 617, 617},
+	
+		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 630 +180 +180 + 90 
+			&& x <= Xsizex + 630 +180 +180 +90 && y >= 617 && y <=  Xsizey + 617  && XV_plant != 0 && planting == false)
 		{
 			//hiện x v
 			XV_plant = 0;
@@ -371,8 +412,9 @@ void mouseClick_back(int button , int state, int x, int y)
 			yes_no = false;
 			glutDisplayFunc(screenGame2);
 		}
-	// _Y 
-		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 810 +180 +180 && x <= 870+180+180 && y >= 616 && y <=  675  && XV_plant != 0)
+	// _Y Rct_btn_V = {810 +180 +180 ,Vsizex + 810 +180 +180,Vsizey + 616, 616}
+		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 810 +180 +180 
+			&& x <= Vsizex + 810 +180 +180 && y >= 616 && y <=  Vsizey + 616  && XV_plant != 0 && planting == false)
 		{
 			//hiện x v
 			XV_plant = 0;
@@ -380,8 +422,85 @@ void mouseClick_back(int button , int state, int x, int y)
 			yes_no = true;
 			glutDisplayFunc(screenGame2);
 		}
-	//click lần 1 dùng struct arrowclick[1] để kiểm soát lần click thứ 1 của tất cả các arrow
+	//click lần 2 dùng struct arrowclick[1].x.y.z.c để kiểu soát hoa đặt vào chậu thứ tự là x,y,z,c
 		// chưa viết
+		for(int i = 0;i < 4;i++)
+		{
+			if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= fl[i].x && x <= fl[i].y && y >= fl[i].c && y <= fl[i].z 
+									      && status == 0 &&  pot[i].pla == 1 && XV_plant != 1 && planting == false )
+			{
+			//load chau trong table
+			cout << "click dat hat\n";
+			cout << i;
+			flclick = i;
+			planting = true;
+			//gd phat trien -> hàm chạy thời gian
+			stage[i].gd = 0;
+
+			glutDisplayFunc(screenGame1);
+			glutPostRedisplay();
+			}
+		}
+		//Rct_seed_A = {600,56+600,60 + 612 - 70,612 - 70},
+		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 600 && x <= 56+600 && y >= 612 - 70 && y <= 60 + 612 - 70 
+			&& XV_plant != 1 && planting == true )
+		{
+
+				typeflclick = 1;
+				//map_pic += 1;
+			//hiện x v
+			XV_plant = 1;
+			yes_no_Flower = false;
+			
+			glutDisplayFunc(screenGame2);
+		}
+		//Rct_seed_B = {700,58+700,57 + 615 - 70,615 - 70},
+		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 700 && x <= 758 && y >= 615 - 70  && y <= 57 + 615 - 70 
+			&& XV_plant != 1 && planting == true)
+		{
+				typeflclick = 2;
+				//map_pic += 1;
+			//hiện x v
+			XV_plant = 1; 
+			yes_no_Flower = false;
+	
+			glutDisplayFunc(screenGame2);
+		}
+		//Rct_seed_C = {800,65+800,62 + 612 - 70,612 - 70},
+		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 800 && x <= 865 && y >= 612 - 70 && y <=  62 + 612 - 70
+			&& XV_plant != 1 && planting == true)
+		{
+				typeflclick = 3;
+				//map_pic += 1;
+			//hiện x v 1 = hiện
+			XV_plant = 1;
+			yes_no_Flower = false;
+			
+			glutDisplayFunc(screenGame2);
+		}
+
+		//Rct_btn_X = {630 +180 +180 + 90 ,Xsizex + 630 +180 +180 +90,Xsizey + 617, 617},
+		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 630 +180 +180 + 90 
+			&& x <= Xsizex + 630 +180 +180 +90  && y >= 617 -70 && y <=  Xsizey + 617  -70 && XV_plant != 0 && planting == true)
+		{
+			//hiện x v
+			XV_plant = 0;
+			//đặt chậu
+			yes_no_Flower = false;
+			planting = false;
+			glutDisplayFunc(screenGame2);
+		}
+		// _V Rct_btn_V = {810 +180 +180 ,Vsizex + 810 +180 +180,Vsizey + 616, 616}
+		if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 810 +180 +180 
+			&& x <= Vsizex + 810 +180 +180 && y >= 616 -70 && y <=  Vsizey + 616 -70  && XV_plant != 0 && planting == true)
+		{
+			//hiện x v
+			XV_plant = 0;
+			//đặt chậu
+			yes_no_Flower = true;
+			planting = false;
+			glutDisplayFunc(screenGame2);
+		}
 	//Load Mission 1170,76+1170,79+190,190
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 1170 && x <= 76+1170  && y >= 190 && y <=  79+190)
 		glutDisplayFunc(Mission);
@@ -485,6 +604,7 @@ void mouseClick(int button , int state, int x, int y)
 	//NEW GAME
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >=150 && x <= 400  && y >= 475 && y <=  550)
 	{
+		typeflclick = 0;
 		potclick  = 0;
 		cacl1 = 0;
 		cacl2 = 0;
@@ -494,9 +614,12 @@ void mouseClick(int button , int state, int x, int y)
 		for(int i = 0;i < 4;i++)
 		{
 			pot[i].pla = 0;
+			fl[i].pla = 0;
 		}
-		arrowclick[0].cl1 = -1,arrowclick[0].cl1 = -1;
-		arrowclick[1].cl2 = -1,arrowclick[1].cl2 = -1;
+		arrowclick = -1;
+		planting = false;
+		yes_no_Flower = false;
+		flclick = 0;
 		glutDisplayFunc(screenGame);
 	}
 
@@ -518,15 +641,15 @@ void mouseClick(int button , int state, int x, int y)
 	glutPostRedisplay();
 }
 //bg2 filter btn-back icon-btn(avt-star)  load btn-left(water-harvest-) load btn-right(shop - bag - list)
-void load_hard_element()
+void load_hard_element() 
 {
 	//Load bg
 	Map_Texture(&Img_Background2);
 	Draw_Rect(&Rct_Background2);
 	// load lớp phủ
-	Map_Texture(&Img_filter_lock);
+	/*Map_Texture(&Img_filter_lock);
 	Draw_Rect(&filter_lock1);
-	Draw_Rect(&filter_lock2);
+	Draw_Rect(&filter_lock2);*/
 	//Load button back
 	Map_Texture(&Img_Back);
 	Draw_Rect(&Rct_btn_Back);
@@ -567,7 +690,11 @@ void screenGame()
 	Draw_Rect(&Rct_btn_Arrow1);
 	Draw_Rect(&Rct_btn_Arrow2);
 	Draw_Rect(&Rct_btn_Arrow3);
-	
+	// chích hoa
+	/*Draw_Rect(&Rct_btn_Fl);
+	Draw_Rect(&Rct_btn_Fl1);
+	Draw_Rect(&Rct_btn_Fl2);
+	Draw_Rect(&Rct_btn_Fl3);*/
 	//load container
 	Map_Texture(&Img_Container);
 	Draw_Rect(&Rct_label_Container);
@@ -582,10 +709,139 @@ void screenGame()
 	//_____________End_____________
 	glutSwapBuffers();
 }
+// Gán hình lên mũi tên đươc chọc trên chậu nếu yes_no_Flower = true;
+void changeImg_ArrowTop()
+{
+	Img_flower = Img_seed;
+	if(flclick == 0){
+			//mũi tên trên chậu
+			Map_Texture(&Img_flower);
+			Draw_Rect(&Rct_btn_Fl);
+			IMG_FL_ARROW[0].img = Img_flower;
+			fl[0].pla = 1;
+				if( fl[1].pla == 1 )
+				{
+					//mũi tên trên chậu
+			Map_Texture(&IMG_FL_ARROW[1].img);
+			Draw_Rect(&Rct_btn_Fl1);
+					
+				}
+				if( fl[2].pla == 1 )
+				{
+					//mũi tên trên chậu
+			Map_Texture(&IMG_FL_ARROW[2].img);
+			Draw_Rect(&Rct_btn_Fl2);
+					
+				}
+				if( fl[3].pla == 1 )
+				{
+					//mũi tên trên chậu
+			Map_Texture(&IMG_FL_ARROW[3].img);
+			Draw_Rect(&Rct_btn_Fl3);
+					
+				}
+	}
+	if(flclick == 1)
+	{
+				
+				//mũi tên trên chậu
+			Map_Texture(&Img_flower);
+			Draw_Rect(&Rct_btn_Fl1);
+				IMG_FL_ARROW[1].img = Img_flower;
+				fl[1].pla = 1;
+					if( fl[0].pla == 1 )
+					{
+						//mũi tên trên chậu
+			Map_Texture(&IMG_FL_ARROW[0].img);
+			Draw_Rect(&Rct_btn_Fl);
+						
+					}
+					if( fl[2].pla == 1 )
+					{
+						//mũi tên trên chậu
+			Map_Texture(&IMG_FL_ARROW[2].img);
+			Draw_Rect(&Rct_btn_Fl2);
+						
+					}
+					if( fl[3].pla == 1 )
+					{
+						//mũi tên trên chậu
+			Map_Texture(&IMG_FL_ARROW[3].img);
+			Draw_Rect(&Rct_btn_Fl3);
+					
+					}
+
+	}
+	if(flclick == 2)
+	{
+
+		//mũi tên trên chậu
+			Map_Texture(&Img_flower);
+			Draw_Rect(&Rct_btn_Fl2);
+		IMG_FL_ARROW[2].img = Img_flower;
+		fl[2].pla = 1;
+			if( fl[0].pla == 1 )
+			{
+				//mũi tên trên chậu
+			Map_Texture(&IMG_FL_ARROW[0].img);
+			Draw_Rect(&Rct_btn_Fl);
+			}
+			if( fl[1].pla == 1 )
+			{
+				//mũi tên trên chậu
+			Map_Texture(&IMG_FL_ARROW[1].img);
+			Draw_Rect(&Rct_btn_Fl1);
+				
+			}
+	
+			if( fl[3].pla == 1 )
+			{
+				//mũi tên trên chậu
+			Map_Texture(&IMG_FL_ARROW[3].img);
+			Draw_Rect(&Rct_btn_Fl3);
+			
+			}
+		
+	}
+	if(flclick == 3)
+	{
+			
+			//mũi tên trên chậu
+			Map_Texture(&Img_flower);
+			Draw_Rect(&Rct_btn_Fl3);
+			IMG_FL_ARROW[3].img = Img_seed;
+			fl[3].pla = 1;
+
+				if( fl[0].pla == 1 )
+				{
+					//mũi tên trên chậu
+			Map_Texture(&IMG_FL_ARROW[0].img);
+			Draw_Rect(&Rct_btn_Fl);
+					
+				}
+				if( fl[1].pla == 1 )
+				{
+					//mũi tên trên chậu
+			Map_Texture(&IMG_FL_ARROW[1].img);
+			Draw_Rect(&Rct_btn_Fl1);
+				
+				}
+				if( fl[2].pla == 1 )
+				{
+					//mũi tên trên chậu
+			Map_Texture(&IMG_FL_ARROW[2].img);
+			Draw_Rect(&Rct_btn_Fl2);
+				}
+		}
+	//yes_no_Flower = false;
+}
 //
 void changeImgYes()
 {
-	if(potclick == 1)
+	// Img_flower là biến tạm để đặt arrow trên chậu
+	Img_flower = Img_Arrow;
+	// Img_stage là biến tạm cho từng giai đoạn 
+				if(potclick == 1)
 				{
 					Img_tam = Img_Pot1;
 				}
@@ -599,7 +855,11 @@ void changeImgYes()
 				}	
 		
 	//Load chau hoa
-	if(arrowclick[0].cl1 == 0 ){
+	if(arrowclick == 0){
+			//mũi tên trên chậu
+			Map_Texture(&Img_flower);
+			Draw_Rect(&Rct_btn_Fl);
+
 			Map_Texture(&Img_tam);
 			Draw_Rect(&Rct_btn_Arrow);
 	
@@ -612,28 +872,44 @@ void changeImgYes()
 			Map_Texture(&Img_Arrow);
 			Draw_Rect(&Rct_btn_Arrow3);
 
+			//test
+				//	Map_Texture(&Img_Arrow);
+				//	Draw_Rect(&Rct_btn_Fl);
 			IMG_CHANGE[0].img = Img_tam;
 			pot[0].pla = 1;
 				if( pot[1].pla == 1 )
 				{
+					//mũi tên trên chậu
+			Map_Texture(&Img_flower);
+			Draw_Rect(&Rct_btn_Fl1);
 					Map_Texture(&IMG_CHANGE[1].img);
 					Draw_Rect(&Rct_btn_Arrow1);
 				}
 				if( pot[2].pla == 1 )
 				{
+					//mũi tên trên chậu
+			Map_Texture(&Img_flower);
+			Draw_Rect(&Rct_btn_Fl2);
 					Map_Texture(&IMG_CHANGE[2].img);
 					Draw_Rect(&Rct_btn_Arrow2);
 				}
 				if( pot[3].pla == 1 )
 				{
+					//mũi tên trên chậu
+			Map_Texture(&Img_flower);
+			Draw_Rect(&Rct_btn_Fl3);
 					Map_Texture(&IMG_CHANGE[3].img);
 					Draw_Rect(&Rct_btn_Arrow3);
 				}
 	}
-	if(arrowclick[0].cl1 == 1)
+	if(arrowclick == 1)
 	{
 				Map_Texture(&Img_Arrow);
 				Draw_Rect(&Rct_btn_Arrow);
+
+				//mũi tên trên chậu
+			Map_Texture(&Img_flower);
+			Draw_Rect(&Rct_btn_Fl1);
 
 				Map_Texture(&Img_tam);
 				Draw_Rect(&Rct_btn_Arrow1);
@@ -647,22 +923,31 @@ void changeImgYes()
 				pot[1].pla = 1;
 					if( pot[0].pla == 1 )
 					{
+						//mũi tên trên chậu
+			Map_Texture(&Img_flower);
+			Draw_Rect(&Rct_btn_Fl);
 						Map_Texture(&IMG_CHANGE[0].img);
 						Draw_Rect(&Rct_btn_Arrow);
 					}
 					if( pot[2].pla == 1 )
 					{
+						//mũi tên trên chậu
+			Map_Texture(&Img_flower);
+			Draw_Rect(&Rct_btn_Fl2);
 						Map_Texture(&IMG_CHANGE[2].img);
 						Draw_Rect(&Rct_btn_Arrow2);
 					}
 					if( pot[3].pla == 1 )
 					{
+						//mũi tên trên chậu
+			Map_Texture(&Img_flower);
+			Draw_Rect(&Rct_btn_Fl3);
 						Map_Texture(&IMG_CHANGE[3].img);
 						Draw_Rect(&Rct_btn_Arrow3);
 					}
 
 	}
-	if(arrowclick[0].cl1 == 2)
+	if(arrowclick == 2)
 	{
 		Map_Texture(&Img_Arrow);
 		Draw_Rect(&Rct_btn_Arrow);
@@ -670,6 +955,9 @@ void changeImgYes()
 		Map_Texture(&Img_Arrow);
 		Draw_Rect(&Rct_btn_Arrow1);
 
+		//mũi tên trên chậu
+			Map_Texture(&Img_flower);
+			Draw_Rect(&Rct_btn_Fl2);
 		Map_Texture(&Img_tam);
 		Draw_Rect(&Rct_btn_Arrow2);
 
@@ -680,23 +968,32 @@ void changeImgYes()
 		pot[2].pla = 1;
 			if( pot[0].pla == 1 )
 			{
+				//mũi tên trên chậu
+			Map_Texture(&Img_flower);
+			Draw_Rect(&Rct_btn_Fl);
 				Map_Texture(&IMG_CHANGE[0].img);
 				Draw_Rect(&Rct_btn_Arrow);
 			}
 			if( pot[1].pla == 1 )
 			{
+				//mũi tên trên chậu
+			Map_Texture(&Img_flower);
+			Draw_Rect(&Rct_btn_Fl1);
 				Map_Texture(&IMG_CHANGE[1].img);
 				Draw_Rect(&Rct_btn_Arrow1);
 			}
 	
 			if( pot[3].pla == 1 )
 			{
+				//mũi tên trên chậu
+			Map_Texture(&Img_flower);
+			Draw_Rect(&Rct_btn_Fl3);
 				Map_Texture(&IMG_CHANGE[3].img);
 				Draw_Rect(&Rct_btn_Arrow3);
 			}
 		
 	}
-	if(arrowclick[0].cl1 == 3)
+	if(arrowclick == 3)
 	{
 			Map_Texture(&Img_Arrow);
 			Draw_Rect(&Rct_btn_Arrow);
@@ -706,7 +1003,9 @@ void changeImgYes()
 
 			Map_Texture(&Img_Arrow);
 			Draw_Rect(&Rct_btn_Arrow2);
-
+			//mũi tên trên chậu
+			Map_Texture(&Img_flower);
+			Draw_Rect(&Rct_btn_Fl3);
 			Map_Texture(&Img_tam);
 			Draw_Rect(&Rct_btn_Arrow3);
 
@@ -715,20 +1014,30 @@ void changeImgYes()
 
 				if( pot[0].pla == 1 )
 				{
+					//mũi tên trên chậu
+			Map_Texture(&Img_flower);
+			Draw_Rect(&Rct_btn_Fl);
 					Map_Texture(&IMG_CHANGE[0].img);
 					Draw_Rect(&Rct_btn_Arrow);
 				}
 				if( pot[1].pla == 1 )
 				{
+					//mũi tên trên chậu
+			Map_Texture(&Img_flower);
+			Draw_Rect(&Rct_btn_Fl1);
 					Map_Texture(&IMG_CHANGE[1].img);
 					Draw_Rect(&Rct_btn_Arrow1);
 				}
 				if( pot[2].pla == 1 )
 				{
+					//mũi tên trên chậu
+			Map_Texture(&Img_flower);
+			Draw_Rect(&Rct_btn_Fl2);
 					Map_Texture(&IMG_CHANGE[2].img);
 					Draw_Rect(&Rct_btn_Arrow2);
 				}
 		}
+	//yes_no = false;
 }
 //
 void changeImgNo()
@@ -738,7 +1047,7 @@ void changeImgNo()
 		Img_tam = Img_Arrow;
 		
 	//Load chau hoa
-	if(arrowclick[0].cl1 == 0 ){
+	if(arrowclick == 0 ){
 			Map_Texture(&Img_tam);
 			Draw_Rect(&Rct_btn_Arrow);
 	
@@ -766,7 +1075,7 @@ void changeImgNo()
 					Draw_Rect(&Rct_btn_Arrow3);
 				}
 	}
-	if(arrowclick[0].cl1 == 1)
+	if(arrowclick == 1)
 	{
 				Map_Texture(&Img_Arrow);
 				Draw_Rect(&Rct_btn_Arrow);
@@ -796,7 +1105,7 @@ void changeImgNo()
 					}
 
 	}
-	if(arrowclick[0].cl1 == 2)
+	if(arrowclick == 2)
 	{
 		Map_Texture(&Img_Arrow);
 		Draw_Rect(&Rct_btn_Arrow);
@@ -826,9 +1135,8 @@ void changeImgNo()
 				Map_Texture(&IMG_CHANGE[3].img);
 				Draw_Rect(&Rct_btn_Arrow3);
 			}
-		
 	}
-	if(arrowclick[0].cl1 == 3)
+	if(arrowclick == 3)
 	{
 			Map_Texture(&Img_Arrow);
 			Draw_Rect(&Rct_btn_Arrow);
@@ -885,6 +1193,15 @@ void screenGame1()
 	Map_Texture(&Img_Arrow);
 	Draw_Rect(&Rct_btn_Arrow3);
 
+	//mũi tên trên chậu
+	/*Map_Texture(&Img_Arrow);
+	Draw_Rect(&Rct_btn_Fl);
+	Map_Texture(&Img_Arrow);
+	Draw_Rect(&Rct_btn_Fl1);
+	Map_Texture(&Img_Arrow);
+	Draw_Rect(&Rct_btn_Fl2);
+	Map_Texture(&Img_Arrow);
+	Draw_Rect(&Rct_btn_Fl3);*/
 	//Tùngu
 				if( pot[0].pla == 1 )
 				{
@@ -898,24 +1215,67 @@ void screenGame1()
 				}
 				if( pot[2].pla == 1 )
 				{
+				
 					Map_Texture(&IMG_CHANGE[2].img);
 					Draw_Rect(&Rct_btn_Arrow2);
 				}
 				if( pot[3].pla == 1 )
 				{
+			
 					Map_Texture(&IMG_CHANGE[3].img);
 					Draw_Rect(&Rct_btn_Arrow3);
 				}
+	// Tùngu2
+				if( fl[0].pla == 1 )
+				{
+					//mũi tên trên chậu
+					Map_Texture(&IMG_FL_ARROW[0].img);
+					Draw_Rect(&Rct_btn_Fl);
+					
+				}
+				if( fl[1].pla == 1 )
+				{
+						//mũi tên trên chậu
+					Map_Texture(&IMG_FL_ARROW[1].img);
+					Draw_Rect(&Rct_btn_Fl1);
+					
+				}
+				if( fl[2].pla == 1 )
+				{
+						//mũi tên trên chậu
+					Map_Texture(&IMG_FL_ARROW[2].img);
+					Draw_Rect(&Rct_btn_Fl2);
+					
+				}
+				if( fl[3].pla == 1 )
+				{
+						//mũi tên trên chậu
+					Map_Texture(&IMG_FL_ARROW[3].img);
+					Draw_Rect(&Rct_btn_Fl3);
+				}
 	
 	
-
-	//Load loại chậu
-	Map_Texture(&Img_Pot1);
-	Draw_Rect(&Rct_pot_Type1);
-	Map_Texture(&Img_Pot2);
-	Draw_Rect(&Rct_pot_Type2);
-	Map_Texture(&Img_Pot3);
-	Draw_Rect(&Rct_pot_Type3);
+	if(planting)
+	{
+		//ve hạt
+		Map_Texture(&Img_seed_A);
+		Draw_Rect(&Rct_seed_A);
+		Map_Texture(&Img_seed_B);
+		Draw_Rect(&Rct_seed_B);
+		Map_Texture(&Img_seed_C);
+		Draw_Rect(&Rct_seed_C);
+	}
+	else 
+	{
+		//Load loại chậu
+		Map_Texture(&Img_Pot1);
+		Draw_Rect(&Rct_pot_Type1);
+		Map_Texture(&Img_Pot2);
+		Draw_Rect(&Rct_pot_Type2);
+		Map_Texture(&Img_Pot3);
+		Draw_Rect(&Rct_pot_Type3);
+	}
+	
 
 	
 	
@@ -933,6 +1293,7 @@ void screenGame2()
 	cout << arrowclick << endl;
 	//bg2 filter btn-back icon-btn(avt-star)  load btn-left(water-harvest-) load btn-right(shop - bag - list)
 	load_hard_element();
+	
 	//gan hinh
 	if(yes_no)
 	{
@@ -941,6 +1302,14 @@ void screenGame2()
 	else 
 	{ 
 		changeImgNo();
+	}
+	if(yes_no_Flower)
+	{
+		changeImg_ArrowTop();
+	}
+	else
+	{
+		
 	}
 	//Load container
 	if (XV_plant == 0)
@@ -954,17 +1323,23 @@ void screenGame2()
 		Map_Texture(&Img_Pot3);
 		Draw_Rect(&Rct_pot_Type3);
 	}
-	else if(XV_plant == 1)
+	else if(XV_plant == 1 && planting == false)
 	{
-		//Load X V
-		Map_Texture(&Img_Container);
-		Draw_Rect(&Rct_label_Container);
+		//Load X V đặt chậu
 		Map_Texture(&Img_X);
 		Draw_Rect(&Rct_btn_X);
 		Map_Texture(&Img_V);
 		Draw_Rect(&Rct_btn_V);
 	}
-	
+	else if (XV_plant == 1 && planting == true)
+	{
+		screenGame1();
+		// load X V đặt hoa
+		Map_Texture(&Img_X);
+		Draw_Rect(&Rct_btn_X_Fl);
+		Map_Texture(&Img_V);
+		Draw_Rect(&Rct_btn_V_Fl);
+	}
 	//Load store
 	glutMouseFunc(mouseClick_back);
 	glutTimerFunc(0,Timer,0);
