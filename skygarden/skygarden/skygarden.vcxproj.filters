@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="sky_garden_main.cpp">
+    <ClCompile Include="Test_Garden_1_able_to_edit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
