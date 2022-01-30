@@ -15,7 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Test_Garden_1_able_to_edit.cpp">
+    <ClInclude Include="pot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SkyGardenDemo1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

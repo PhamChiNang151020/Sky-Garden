@@ -11,7 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Test_Garden_1_able_to_edit.cpp" />
+    <ClInclude Include="pot.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SkyGardenDemo1.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{33394852-99F7-4B74-BEB7-CE3A0B98D9D0}</ProjectGuid>

@@ -1,6 +1,6 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
-#include <glut.h>
+#include <gl/glut.h>
 #include <gl\GL.h>
 #include <gl\GLU.h>
 #include <vector>
@@ -10,7 +10,7 @@
 #include <string.h>
 #include <loadpng.h>
 #include <process_image.h>
-#include <gl\gl_texture.h>
+#include <gl_texture.h>
 //Tùng
 using namespace std;
 //Kích thước màn hình
@@ -24,7 +24,7 @@ int xPot2 = 58, yPot2 = 57;
 int xPot3 = 65, yPot3 = 62;
 //Biến vị trí màn hình
 int status;
-//thứ tự của chậu trong container
+//thứ tự của chậu trong container	
 int potclick  = 0;
 
 // Giai đoạn của hạt // chưa đổi giá trị // gọi 1 lần trong hàm xác nhận đặt hoa
