@@ -10,9 +10,7 @@
 #include <string.h>
 #include <loadpng.h>
 #include <process_image.h>
-#include <gl\gl_texture.h>
-
-//Tùng
+#include <gl_texture.h>
 
 using namespace std;
 //Kích thước màn hình
@@ -20,14 +18,13 @@ using namespace std;
 #define HEIGHT 720
 //Màn load lại sao 15ms
 #define INTERVAL 15
-// ?? Phong viết cô ơi
-#define CLOUD_COUNT 3
+
 //Size của 3 chậu
 int xPot1 = 56, yPot1 = 60;
 int xPot2 = 58, yPot2 = 57;
 int xPot3 = 65, yPot3 = 62;
 //Biến vị trí màn hình
-int status, manhinh;
+int status;
 //Biến chậu
 int arrowclick = 0;
 int potclick  = 0;
@@ -35,18 +32,12 @@ int potclick  = 0;
 // Khai báo struct lưu giá trị của chậu
 struct Pot{int x,y,z,c;};
 //  vị trí của chậu 1 ở 4 arrow
-Pot pot[4] = {pot[0].x = 400           , pot[0].y = xPot1+400, pot[0].z = yPot1 + 450,pot[0].c = 450, 
-			  pot[1].x = pot[0].x + 200, pot[1].y = xPot1+600, pot[1].z = yPot1 + 650,pot[1].c = 450,
+Pot pot[4] = {	  pot[0].x = 400 , pot[0].y = xPot1+400, pot[0].z = yPot1 + 450,pot[0].c = 450, 
+		  pot[1].x = pot[0].x + 200, pot[1].y = xPot1+600, pot[1].z = yPot1 + 450,pot[1].c = 450,
 	          pot[2].x = pot[0].x + 400, pot[2].y = xPot1+800, pot[2].z = yPot1 + 450,pot[2].c = 450,
 	          pot[3].x = pot[0].x + 600, pot[3].y = xPot1+1000, pot[3].z = yPot1 + 450,pot[3].c = 450};
-struct T{int x,y,z,c;};
-//T là vị trí load chậu trong container
-T t[3] = {// Tọa độ của 3pot/seed/trangtri
-			  t[0].x= 0,t[0].y=0,t[0].z = 0, t[0].c= 0,
-			  t[1].x= 0,t[1].y=0,t[1].z = 0, t[1].c= 0,
-			  t[2].x= 0,t[2].y=0,t[2].z = 0, t[2].c= 0,
-			};
-
+struct Pos{int position, type;};
+Pos pos[4] = {pos[0].position, pos[0].type,pos[1].position, pos[1].type,pos[2].position, pos[2].type,pos[3].position, pos[3].type};
 
 					// Trái Phải dưới trên 
 Rect	Rct_Background = {0, 1280, 720,0}, //Màn hình menu
@@ -283,18 +274,14 @@ void display()
 // back xanh lá - chuyển màn hình shop - xử lí click đặt chậu - click mission
 void mouseClick_back(int button , int state, int x, int y)
 {
-	// Click btn back, chuyển sang màn hình Display với stt = 0 = màn hình screenGame
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 20 && x <= 70 && y >= 20  && y <= 95 && status == 0 )
     {
         glutDisplayFunc(display);
     }
-	//click btn back, chuyển từ Shop về screenGame với stt = 1 = màn hình Shop
+	//Trả về màn hình game
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN &&x >= 20 && x <= 70 && y >= 20  && y <= 95 && status == 1 )
 		glutDisplayFunc(screenGame);
-	// Click btn back chuyển từ Shop về screen2,
-	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN &&x >= 20 && x <= 70 && y >= 20  && y <= 95 && status == 1 && manhinh == 1)
-		glutDisplayFunc(screenGame2);
-	//Khi click vào icon Shop chuyển màn hình sang Shop
+	//Chuyển qua màn hình shop
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 1170 && x <= 81+1170 && y >= 100 && y <= 76+100 && status == 0)
 		glutDisplayFunc(screenShop);
 	//
@@ -306,6 +293,15 @@ void mouseClick_back(int button , int state, int x, int y)
 		cout << "click dat chau\n";
 		cout << i;
 		arrowclick = i;
+		if(arrowclick == 0){
+			pos[0].position = 1;
+		}else if (arrowclick == 1){
+			pos[1].position = 2;
+		}else if (arrowclick == 2){
+			pos[2].position = 3;
+		}else if (arrowclick == 3){
+			pos[3].position = 4;
+		}
 		glutDisplayFunc(screenGame1);
 		glutPostRedisplay();
 		}
@@ -337,7 +333,7 @@ void mouseClick_back(int button , int state, int x, int y)
 	glutPostRedisplay();
 }
 // click newgame
-void mouseClick_close_Exit(int button , int state, int x, int y)
+void mouseClick_back_display(int button , int state, int x, int y)
 {
 	//yes
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 495 && x <= 495+110  && y >= 380 && y <=  380+110)
@@ -348,11 +344,11 @@ void mouseClick_close_Exit(int button , int state, int x, int y)
 		glutDisplayFunc(display);
 }
 // back về screen Game(Chính)
-void mouseClick_close_Mission(int button , int state, int x, int y)
+void mouseClick_back_ScreenGame(int button , int state, int x, int y)
 {	
 	//tọa độ nút x trong m
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >=850 && x <= 895  && y >= 85 && y <=  138)
-		glutDisplayFunc(screenGame1);
+		glutDisplayFunc(screenGame);
 }
 // Hàm mission
 void Mission()
@@ -397,7 +393,7 @@ void Mission()
 	Draw_Rect(&Rct_label_Mission);
 	
 	
-	glutMouseFunc(mouseClick_close_Mission);
+	glutMouseFunc(mouseClick_back_ScreenGame);
 	//_____________End_____________
 	glutSwapBuffers();
 }
@@ -423,7 +419,7 @@ void Exit()
 	Map_Texture(&Img_Exit_YesNo);
 	Draw_Rect(&Rct_Exit_YesNo); 
 
-	glutMouseFunc(mouseClick_close_Exit);
+	glutMouseFunc(mouseClick_back_display);
 
 	//_____________End_____________
 	glutSwapBuffers();
@@ -438,7 +434,7 @@ void mouseClick(int button , int state, int x, int y)
 	// Continue
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 150 && x <= 400 && y >= 575 && y <= 650)
 	{
-		//glutDisplayFunc(screenGame2);
+		// hàm continue
 	}
 	//Help
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 880 && x <= 1130 &&  y >= 475 && y <= 550)
@@ -545,6 +541,17 @@ void screenGame1()
 	glLoadIdentity();
 	status = 0;
 	cout << arrowclick;
+	cout << "Screen : 1";
+	cout <<"arrowclick: " <<arrowclick << endl;
+	cout <<"potclick: " <<potclick << endl;
+	cout <<"pos[0].type: " << pos[0].type << endl;
+	cout <<"pos[1].type: " << pos[1].type << endl;
+	cout <<"pos[2].type: " << pos[2].type << endl;
+	cout <<"pos[3].type: " << pos[3].type << endl;
+	cout <<"pos[0].position: " << pos[0].position << endl;
+	cout <<"pos[1].position: " << pos[1].position << endl;
+	cout <<"pos[2].position: " << pos[2].position << endl;
+	cout <<"pos[3].position: " << pos[3].position << endl;
 	//_____________Start_____________
 	//Load bg
 	Load_Texture_Swap(&Img_Background2,"Images/bg2.png");
@@ -562,15 +569,39 @@ void screenGame1()
 	
 	Map_Texture(&Img_Container);
 	Draw_Rect(&Rct_label_Container);
+	//the chau hoa
+	if(pos[0].position == 1 || pos[1].position == 1 || pos[2].position == 1 || pos[3].position == 1)
+	{
+		Img_tam = Img_Pot1;
+		
+	}
+	else if(pos[0].position == 2 || pos[1].position == 2 || pos[2].position == 2 || pos[3].position == 2)
+	{
+		Img_tam = Img_Pot2;
+		
+	}
+	else if(pos[0].position == 3 || pos[1].position == 3 || pos[2].position == 3 || pos[3].position == 3)
+	{
+		Img_tam = Img_Pot3;
+		
+	}
 	//Load chau hoa
-	Map_Texture(&Img_Arrow);
-	Draw_Rect(&Rct_btn_Arrow);
-	Map_Texture(&Img_Arrow);
-	Draw_Rect(&Rct_btn_Arrow1);
-	Map_Texture(&Img_Arrow);
-	Draw_Rect(&Rct_btn_Arrow2);
-	Map_Texture(&Img_Arrow);
-	Draw_Rect(&Rct_btn_Arrow3);
+		if(pos[0].position != 0 || pos[0].type != 0){
+			Map_Texture(&Img_Arrow);
+			Draw_Rect(&Rct_btn_Arrow);
+		}
+		if(pos[1].position != 0 || pos[1].type != 0){
+			Map_Texture(&Img_Arrow);
+			Draw_Rect(&Rct_btn_Arrow1);
+		}
+		if(pos[2].position != 0 || pos[2].type != 0 ){
+			Map_Texture(&Img_Arrow);
+			Draw_Rect(&Rct_btn_Arrow2);
+		}
+		if(pos[3].position != 0 || pos[3].type != 0 ){
+			Map_Texture(&Img_Arrow);
+			Draw_Rect(&Rct_btn_Arrow3);
+		}
 
 	//Load icon botton
 	Map_Texture(&Img_icon_avt);
@@ -614,11 +645,18 @@ void screenGame2()
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 	//_____________Start_____________
-
-	status = 0; // Sử dụng cho btn back(tương tự như screenGame, để back về display)
-
-	glutMouseFunc(mouseClick_back);
-	cout << arrowclick << endl;
+	cout << "Screen : 2";
+	cout <<"arrowclick: " <<arrowclick << endl;
+	cout <<"potclick: " <<potclick << endl;
+	cout <<"pos[0].type: " << pos[0].type << endl;
+	cout <<"pos[1].type: " << pos[1].type << endl;
+	cout <<"pos[2].type: " << pos[2].type << endl;
+	cout <<"pos[3].type: " << pos[3].type << endl;
+	cout <<"pos[0].position: " << pos[0].position << endl;
+	cout <<"pos[1].position: " << pos[1].position << endl;
+	cout <<"pos[2].position: " << pos[2].position << endl;
+	cout <<"pos[3].position: " << pos[3].position << endl;
+	//Load bg
 	//Load_Texture_Swap(&Img_Background2,"Images/bg2.png");
 	Map_Texture(&Img_Background2);
 	Draw_Rect(&Rct_Background2);
@@ -643,30 +681,33 @@ void screenGame2()
 	if(potclick == 1)
 	{
 		Img_tam = Img_Pot1;
+		
 	}
 	else if(potclick == 2)
 	{
 		Img_tam = Img_Pot2;
+		
 	}
 	else 
 	{
 		Img_tam = Img_Pot3;
+		
 	}
 	//Load chau hoa
-	if(arrowclick == 0 ){
+	if(arrowclick == 0  ){
 
-	Map_Texture(&Img_tam);
-	Draw_Rect(&Rct_btn_Arrow);
+		Map_Texture(&Img_tam);
+		Draw_Rect(&Rct_btn_Arrow);
 	
-	Map_Texture(&Img_Arrow);
-	Draw_Rect(&Rct_btn_Arrow1);
+		Map_Texture(&Img_Arrow);
+		Draw_Rect(&Rct_btn_Arrow1);
+		
+		Map_Texture(&Img_Arrow);
+		Draw_Rect(&Rct_btn_Arrow2);
 	
-	Map_Texture(&Img_Arrow);
-	Draw_Rect(&Rct_btn_Arrow2);
-	
-	Map_Texture(&Img_Arrow);
-	Draw_Rect(&Rct_btn_Arrow3);
-
+		Map_Texture(&Img_Arrow);
+		Draw_Rect(&Rct_btn_Arrow3);
+		pos[0].type = potclick;
 	}
 	if(arrowclick == 1)
 	{
@@ -681,8 +722,9 @@ void screenGame2()
 
 		Map_Texture(&Img_Arrow);
 		Draw_Rect(&Rct_btn_Arrow3);
+		pos[1].type = potclick;
 	}
-	if(arrowclick == 2)
+	if(arrowclick == 2 )
 	{
 		Map_Texture(&Img_Arrow);
 		Draw_Rect(&Rct_btn_Arrow);
@@ -695,6 +737,7 @@ void screenGame2()
 
 		Map_Texture(&Img_Arrow);
 		Draw_Rect(&Rct_btn_Arrow3);
+		pos[2].type = potclick;
 	}
 	if(arrowclick == 3)
 	{
@@ -709,6 +752,7 @@ void screenGame2()
 
 		Map_Texture(&Img_tam);
 		Draw_Rect(&Rct_btn_Arrow3);
+		pos[3].type = potclick;
 	}
 	
 	//Load container
@@ -763,7 +807,6 @@ void screenShop()
 {
 	glutSetWindowTitle("SHOP");
 	status = 1;
-	manhinh= 1;
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 	//_____________Start___________
