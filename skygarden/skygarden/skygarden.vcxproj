@@ -74,7 +74,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="flower.h" />
     <ClInclude Include="pot.h" />
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,4 @@
-﻿Build started 30/01/2022 6:47:26 CH.
+﻿Build started 30/01/2022 9:31:55 CH.
      1>Project "D:\Github\Sky-Garden\skygarden\skygarden\skygarden.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\skygarden.unsuccessfulbuild" because "AlwaysCreate" was specified.
@@ -7,7 +7,6 @@
          SkyGardenDemo1.cpp
        ManifestResourceCompile:
          All outputs are up-to-date.
-         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /nologo /fo"Debug\skygarden.exe.embed.manifest.res" Debug\skygarden_manifest.rc 
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Github\Sky-Garden\skygarden\Debug\skygarden.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\skygarden.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"D:\Github\Sky-Garden\skygarden\Debug\skygarden.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Github\Sky-Garden\skygarden\Debug\skygarden.lib" /MACHINE:X86 Debug\skygarden.exe.embed.manifest.res
          Debug\SkyGardenDemo1.obj
@@ -24,4 +23,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.24
+Time Elapsed 00:00:02.25
