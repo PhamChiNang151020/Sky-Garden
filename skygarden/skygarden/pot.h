@@ -8,7 +8,8 @@ public:
 	int clickChooseFlower;
 	int potType; // Loại chậu 
 	bool planted; // Ktra đã trồng
-	int flowerType;
-	int stage;
+	int flowerType; // Loại hoa
+	int stage; // Giai đoạn
+	int location; // thu tu vi tri
 };
 #endif
