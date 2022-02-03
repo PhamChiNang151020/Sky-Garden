@@ -53,7 +53,16 @@ Rect	rct_btn_newGame={150, 250 + 150, 75 + 475, 475}, //250x75
 Rect    //icon
 		//icon_avt={400,54+400,35+640,640},
 		//icon_star={400,30+400,29+608,608},
-		rct_container={360,675+360,85+600,600};//// container(thanh gỗ) chứa các chậu và hoa
+		rct_container={360,675+360,85+600,600},//// container(thanh gỗ) chứa các chậu và hoa
+		//btn mũi tên (Nơi đặt hoa)
+		Rct_btn_Fl,
+		Rct_btn_Fl1,
+		Rct_btn_Fl2,
+		Rct_btn_Fl3,
+		// chau hoa trong container
+		Rct_pot_Type1 = {600,xPot1+600,yPot1 + 612,612}, // chậu bạc
+		Rct_pot_Type2 = {700,xPot2+700,yPot2 + 615,615}, // chậu vàng
+		Rct_pot_Type3 = {800,xPot3+800,yPot3 + 612,612}; // chậu đỏ
 		
 //Khai báo hình ảnh
 Image	img_bg, img_bg2, img_helpScreen, img_exit_YN, img_shopScreen,//bg
@@ -65,14 +74,8 @@ Image	img_bg, img_bg2, img_helpScreen, img_exit_YN, img_shopScreen,//bg
 		img_harVest, img_shoVel, img_water, 
 		//cloud
 		img_cloud,
-		//Mũi tên 
-		img_arrow,
 		//btn back
 		img_btn_back,
-		//Chậu
-		img_pot1, img_pot2, img_pot3,
-		//Hạt giống
-		img_seed1,img_seed2,img_seed3,
 		// thanh gỗ chứa chậu và hoa
 		img_container,
 		//Hoa(các giai đoạn- hạt, mầm, hoa)
@@ -147,7 +150,7 @@ c_loadimage Container[3];
 //============Kết thúc khai báo thanh gỗ
 //=============Khai báo cho các giai đoạn phát triển của hoa
 c_flower flower[12]; // cho 12 vị trí hoa
-int floorSky = 1; // tầng 1 2 3
+int floorSky = 3; // tầng 1 2 3
 
 //============Kết thúc khai cho các giai đoạn phát triển của hoa
 //Khai báo biến màn hình
@@ -287,7 +290,7 @@ void init_menu() {
 // Hàm Init Rain Cloud
 void initRain_Cloud()
 {
-	c_Cloud :: Load_Image("Images/Cloud4.png"); // khai báo init 
+	c_Cloud :: Load_Image("Images/Cl1.png"); // khai báo init 
 	Cloud[0].Init(370.0f, 0.0f);
 	Cloud[1].Init(930.0f, 200.0f);
 	Cloud[2].Init(240.0f, 355.0f);
@@ -544,7 +547,7 @@ void screenNewGame() {
   display_RainCloud();
   //load container
   loadContainer();
-  //display vị trí chậu tầng 1
+ //display vị trí chậu tầng 1
   if(floorSky >=1)
   {
 	displaySkyB1();
@@ -560,7 +563,7 @@ void screenNewGame() {
   }
   if(floorSky >=3 )
   {
-	  //May lock tầng 1
+	  //May lock tầng 3
 	  filter_lock1.Bottom = 0;
 	  filter_lock1.Top = 0;
 	  filter_lock1.Left = 0;
@@ -856,7 +859,7 @@ void clickMain(int button, int state, int x, int y) {
   }
   // ==================== Tầng 2 =========
   //vị trí chậu 1 tầng 2
-  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[4].x && x <= locationPot[4].y && y >= locationPot[4].c && y <= locationPot[4].z && floorSky >=2)
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[4].x && x <= locationPot[4].y && y >= locationPot[4].c && y <= locationPot[4].z )
   {
 	cout <<"Click vao vi tri 1 tang 2"<<endl;
 	// kiểm soát vị trí được chọn
@@ -888,7 +891,7 @@ void clickMain(int button, int state, int x, int y) {
 		glutPostRedisplay();
   }
     //vị trí chậu 2 tầng 2
-  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[5].x && x <= locationPot[5].y && y >= locationPot[5].c && y <= locationPot[5].z && floorSky >=2 )
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[5].x && x <= locationPot[5].y && y >= locationPot[5].c && y <= locationPot[5].z )
   {
 	cout <<"Click vao vi tri 2 tang 2"<<endl;
 	// kiểm soát vị trí được chọn
@@ -919,8 +922,8 @@ void clickMain(int button, int state, int x, int y) {
 	// kết thúc Kiểm tra có chậu chưa
 		glutPostRedisplay();
   }
-    //vị trí chậu 3 tầng 2
-  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[6].x && x <= locationPot[6].y && y >= locationPot[6].c && y <= locationPot[6].z  && floorSky >=2 )
+    //vị trí chậu 3
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[6].x && x <= locationPot[6].y && y >= locationPot[6].c && y <= locationPot[6].z )
   {
 	cout <<"Click vao vi tri 3 tang 2"<<endl;
 	// kiểm soát vị trí được chọn
@@ -951,8 +954,8 @@ void clickMain(int button, int state, int x, int y) {
 	// kết thúc Kiểm tra có chậu chưa
 		glutPostRedisplay();
   }
-    //vị trí chậu 4 tầng 2
-  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[7].x && x <= locationPot[7].y && y >= locationPot[7].c && y <= locationPot[7].z  && floorSky >=2 )
+    //vị trí chậu 4
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[7].x && x <= locationPot[7].y && y >= locationPot[7].c && y <= locationPot[7].z )
   {
 	cout <<"Click vao vi tri 4 tang 2"<<endl;
 	// kiểm soát vị trí được chọn
@@ -985,7 +988,7 @@ void clickMain(int button, int state, int x, int y) {
   }
   //====================== Tầng 3
   //vị trí chậu 1 tầng 3
-  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[8].x && x <= locationPot[8].y && y >= locationPot[8].c && y <= locationPot[8].z  && floorSky >= 3)
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[8].x && x <= locationPot[8].y && y >= locationPot[8].c && y <= locationPot[8].z )
   {
 	cout <<"Click vao vi tri 1 tang 3"<<endl;
 	// kiểm soát vị trí được chọn
@@ -1017,7 +1020,7 @@ void clickMain(int button, int state, int x, int y) {
 		glutPostRedisplay();
   }
     //vị trí chậu 2 tầng 3
-  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[9].x && x <= locationPot[9].y && y >= locationPot[9].c && y <= locationPot[9].z && floorSky >= 3)
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[9].x && x <= locationPot[9].y && y >= locationPot[9].c && y <= locationPot[9].z )
   {
 	cout <<"Click vao vi tri 2 tang 3"<<endl;
 	// kiểm soát vị trí được chọn
@@ -1049,8 +1052,8 @@ void clickMain(int button, int state, int x, int y) {
 	// kết thúc Kiểm tra có chậu chưa
 		glutPostRedisplay();
   }
-    //vị trí chậu 3 tầng 3
-  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[10].x && x <= locationPot[10].y && y >= locationPot[10].c && y <= locationPot[10].z&& floorSky >= 3 )
+    //vị trí chậu 3
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[10].x && x <= locationPot[10].y && y >= locationPot[10].c && y <= locationPot[10].z )
   {
 	cout <<"Click vao vi tri 3 tang 3"<<endl;
 		// kiểm soát vị trí được chọn
@@ -1083,8 +1086,8 @@ void clickMain(int button, int state, int x, int y) {
 		glutPostRedisplay();
 	
   }
-    //vị trí chậu 4 tầng 3
-  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[11].x && x <= locationPot[11].y && y >= locationPot[11].c && y <= locationPot[11].z && floorSky >= 3 )
+    //vị trí chậu 4
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[11].x && x <= locationPot[11].y && y >= locationPot[11].c && y <= locationPot[11].z )
   {
 	cout <<"Click vao vi tri 4 tang 3"<<endl;
 	// kiểm soát vị trí được chọn

@@ -1,4 +1,5 @@
-﻿class c_loadimage {
+﻿
+class c_loadimage {
    public:
 	bool choose;// chậu đã chọn,// true đã chọn loại chậu, false là chưa
     Image Img_Save;
