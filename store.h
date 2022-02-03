@@ -50,7 +50,7 @@ class c_Store_Pot {
 		y = -200;
 		Update_Rect_x();
 		Update_Rect_y();
-		//c_Store_Pot :: ~c_Store_Pot();
+		//Delete_Image(&Img_Save);
 	}
 	void Update_Rect_x() {
 		Rct.Left = x - Img->w / 2;

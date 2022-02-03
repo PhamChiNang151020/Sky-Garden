@@ -15,6 +15,7 @@
 #include <windows.h>
 #include "pot.h"
 #include "flower.h"
+#include "loadimage.h"
 using namespace std;
 //Kích thước màn hình
 #define WIDTH 1280
@@ -24,8 +25,6 @@ using namespace std;
 int xPot1 = 56, yPot1 = 60;
 int xPot2 = 58, yPot2 = 57;
 int xPot3 = 65, yPot3 = 62;	
-pot pots[12]; // khai báo 12 chậu
-flower flowers[12]; // Khai báo 12 hoa
 // Khai báo tạo độ cho 4 chậu đầu tiên
 //Khai báo các biến vẽ màn hình
 Rect	rct_bg = {0, 1280, 720, 0}, //Màn hình menu
@@ -54,21 +53,8 @@ Rect	rct_btn_newGame={150, 250 + 150, 75 + 475, 475}, //250x75
 Rect    //icon
 		//icon_avt={400,54+400,35+640,640},
 		//icon_star={400,30+400,29+608,608},
-		//btn mũi tên (Nơi đặt chậu hoa)
-		// Gán vị trí cho 4 mũi tên(Place to plant pots)
-		Rct_btn_Arrow ={400 ,xPot1+400,yPot1 + 450,450},
-	    Rct_btn_Arrow1={600 ,xPot1+600,yPot1 + 450,450},
-	    Rct_btn_Arrow2={800 ,xPot1+800,yPot1 + 450,450},
-	    Rct_btn_Arrow3={1000 ,xPot1+1000,yPot1 + 450,450},
-		//btn mũi tên (Nơi đặt hoa)
-		Rct_btn_Fl,
-		Rct_btn_Fl1,
-		Rct_btn_Fl2,
-		Rct_btn_Fl3,
-		// chau hoa trong container
-		Rct_pot_Type1 = {600,xPot1+600,yPot1 + 612,612}, // chậu bạc
-		Rct_pot_Type2 = {700,xPot2+700,yPot2 + 615,615}, // chậu vàng
-		Rct_pot_Type3 = {800,xPot3+800,yPot3 + 612,612}; // chậu đỏ
+		rct_container={360,675+360,85+600,600};//// container(thanh gỗ) chứa các chậu và hoa
+		
 //Khai báo hình ảnh
 Image	img_bg, img_bg2, img_helpScreen, img_exit_YN, img_shopScreen,//bg
 		//buttton
@@ -109,7 +95,7 @@ c_Store_Seed Seed_Store_Ghost[3];
 int money = 50000;
 // màn hình shop
   
-Rect  Rct_btn_Buy={990,205+990,75+605,605}; // Nút bye
+Rect  Rct_btn_Buy={990,205+990,75+605,605}; // Nút buy
 		//Rct_Score;
 Image Img_Buy;
 Image Num :: Img_Num[10]; // khai bao sử dụng ảnh số vi static
@@ -130,7 +116,40 @@ c_Cloud Cloud[4];
 #define INTERVAL 10 // load lại số lần timer
 
 // ==================== kết thúc chức nawg tưới cây và hiệu ứng mây
+//============ các vị trí chậu
+c_pot pot[12]; // vị trí 12 chậu cho 3 tầng
 
+//Size của 3 chậu
+//int xPot1 = 56;int yPot1 = 60;
+//int xPot2 = 58;int yPot2 = 57;
+//int xPot3 = 65;int yPot3 = 62;
+// Khai báo struct chứa vị trí thứ tự của 4 đối tượng
+struct location{int x,y,z,c;};
+// vị trí của chậu// Trái Phải dưới trên 
+location locationPot[12] = {locationPot[0].x = 390                    , locationPot[0].y = 60+locationPot[0].x, locationPot[0].z = 70 + 450,locationPot[0].c = 440,
+						   locationPot[1].x = locationPot[0].x + 200 - 60/2, locationPot[1].y = 60+locationPot[1].x , locationPot[1].z = 70 + 450,locationPot[1].c = 440,
+						   locationPot[2].x = locationPot[0].x + 400 - 60/2 , locationPot[2].y = 60+ locationPot[2].x, locationPot[2].z = 70 + 450,locationPot[2].c = 440, 
+						   locationPot[3].x = locationPot[0].x + 600 - 60/2, locationPot[3].y = 60+locationPot[3].x, locationPot[3].z = 70 + 450,locationPot[3].c = 440,
+
+						   locationPot[4].x = 390                    , locationPot[4].y = 60+locationPot[4].x, locationPot[4].z = 70 + 250, locationPot[4].c = 250,
+						   locationPot[5].x = locationPot[0].x + 200 - 60/2, locationPot[5].y = 60+locationPot[5].x , locationPot[5].z = 70 + 250, locationPot[5].c = 250,
+						   locationPot[6].x = locationPot[0].x + 400 - 60/2 , locationPot[6].y = 60+ locationPot[6].x, locationPot[6].z = 70 + 250, locationPot[6].c = 250, 
+						   locationPot[7].x = locationPot[0].x + 600 - 60/2, locationPot[7].y = 60+locationPot[7].x, locationPot[7].z = 70 + 250, locationPot[7].c = 250,
+						
+						   locationPot[8].x = 390                    , locationPot[8].y = 60+locationPot[0].x, locationPot[8].z = 70 + 100, locationPot[8].c = 100,
+						   locationPot[9].x = locationPot[0].x + 200 - 60/2, locationPot[9].y = 60+locationPot[1].x , locationPot[9].z = 70 + 100, locationPot[9].c = 100,
+						   locationPot[10].x = locationPot[0].x + 400 - 60/2 , locationPot[10].y = 60+ locationPot[2].x, locationPot[10].z = 70 + 100, locationPot[10].c = 100, 
+						   locationPot[11].x = locationPot[0].x + 600 - 60/2, locationPot[11].y = 60+locationPot[3].x, locationPot[11].z = 70 + 100, locationPot[11].c = 100 };
+//============ kết thúc vo 12 vị trí
+//=============Khai báo cho thanh gỗ
+c_loadimage Container[3];
+
+//============Kết thúc khai báo thanh gỗ
+//=============Khai báo cho các giai đoạn phát triển của hoa
+c_flower flower[12]; // cho 12 vị trí hoa
+int floorSky = 1; // tầng 1 2 3
+
+//============Kết thúc khai cho các giai đoạn phát triển của hoa
 //Khai báo biến màn hình
 int screen;
 
@@ -138,11 +157,20 @@ int screen;
 void init();
 void initStore(); // init shop
 void initRain_Cloud();// init Rain Cloud
+void initSkyB1(); // init vị trí tầng 1
+void initSkyB2(); // init vị trí tầng 2
+void initSkyB3(); // init vị trí tầng 3
+void initPositiveContainer(); // init thanh gỗ
 void display();
 void displayStore(); // display shop
 void display_RainCloud(); // display Rain_Cloud
+void displaySkyB1();// dislpaly vị trí b1
+void displaySkyB2();// dislpaly vị trí b1
+void displaySkyB3();// dislpaly vị trí b1
+void displayPositiveContainer();//display các vị trí ở dưới thanh gỗ
 void init_inGame();//hàm load img
 void init_menu();
+void initPositiveContainerFlower();// itit hoa trên thanh gỗ
 void screenNewGame(); // Hàm startGame
 void screenContinue(); // Hàm startGame
 void screenExit();// Hiển thị màn Exit(Yes/No)
@@ -150,6 +178,7 @@ void screenHelp();// Hiển thị màn Help
 void screenShop();// Hiển thị màn Shop
 void btnBack();   // Tạo btn back ngay góc trái trên
 void btn_screenNewGame(); // chứa các button tại màn new game cũng như continue
+void clickMain(int button, int state, int x, int y);// dùng để click các phần tử trong màn new game
 void clickMenuIntro(int button, int state, int x, int y); // Click các btn ngoài màn newgame
 void clickExit(int button, int state, int x, int y);      // Chọn Yes để thoát, No quay về Display
 void clickBack(int button, int state, int x, int y); // Dùng để quay lại màn hình display từ các màn khác(Newgame, helpScreen)
@@ -158,6 +187,9 @@ void mouseClickInShop(int button , int state, int x, int y); // click trong shop
 void clickList(int button, int state, int x, int y); // Dùng để chuyển sang màn List
 void Timer_CloudRain(); // Timer cho Cloud_Rain
 void Timer(int value);// Hàm timer
+void loadContainer();//load thanh gỗ
+char* choosePots(int i); // chọn ảnh chậu
+char* chooseFlower(int i);//ảnh hoa
 // Mã nguồn code chính
 int main(int argc, char ** argv) {
   glutInit( & argc, argv);
@@ -213,22 +245,10 @@ void init_inGame() {
   //Load mây
   Load_Texture_Swap( & img_cloud, "Images/filter-lock.png");
   //Load Mũi tên
-  Load_Texture_Swap( & img_arrow, "Images/Arrow.png");
+  //Load_Texture_Swap( & img_arrow, "Images/Arrow.png");
   Load_Texture_Swap( & img_btn_back, "Images/btn-Back.png");
-  //Load Chậu
-  Load_Texture_Swap( & img_pot1, "Images/Pot1.png");
-  Load_Texture_Swap( & img_pot2, "Images/Pot2.png");
-  Load_Texture_Swap( & img_pot3, "Images/Pot3.png");
-  //Load hạt giống(Để lựa chọn hạt giống)
-  Load_Texture_Swap( & img_seed1, "Images/Seed1.png");
-  Load_Texture_Swap( & img_seed2, "Images/Seed2.png");
-  Load_Texture_Swap( & img_seed3, "Images/Seed3.png");
-  //Load hoa các giai đoạn(hạt, mầm, hoa-3 loại)
-  Load_Texture_Swap( & img_seed, "Images/Seed.png");
-  Load_Texture_Swap( & img_germ, "Images/Germ.png");
-  Load_Texture_Swap( & img_fl1, "Images/fl1.png");
-  Load_Texture_Swap( & img_fl2, "Images/fl2.png");
-  Load_Texture_Swap( & img_fl3, "Images/fl3.png");
+   // Load ô chứa (thanh gỗ dưới cùng) - container
+  Load_Texture_Swap(&img_container,"Images/Container.png");
   //Load btn right
   Load_Texture_Swap( & img_bag, "Images/btn-Bag.png");
   Load_Texture_Swap( & img_shop, "Images/btn-Shop.png");
@@ -248,6 +268,14 @@ void init_inGame() {
   //Init Rain Cloud
   initRain_Cloud();
   //Kết thúc init RainCould
+  //initSkyB1
+  initSkyB1();
+  //initSkyB2
+  initSkyB2();
+  //initSkyB3
+  initSkyB3();
+  //init các vị trí thanh gỗ bên dưới
+  initPositiveContainer();
 }
 //hàm khởi động game
 void init_menu() {
@@ -259,7 +287,7 @@ void init_menu() {
 // Hàm Init Rain Cloud
 void initRain_Cloud()
 {
-	c_Cloud :: Load_Image("Images/Cl1.png"); // khai báo init 
+	c_Cloud :: Load_Image("Images/Cloud4.png"); // khai báo init 
 	Cloud[0].Init(370.0f, 0.0f);
 	Cloud[1].Init(930.0f, 200.0f);
 	Cloud[2].Init(240.0f, 355.0f);
@@ -315,6 +343,102 @@ void initStore()
 
 	Num:: Load_Texture_Num("Images/Nums.png");
 }
+// init vị trị chậu tầng 1
+void initSkyB1()
+{
+	for(int i = 0; i<4;i++)
+	{
+		pot[i].Load_Image("Images/Arrow.png");
+	}
+	pot[0].Init_Pot(400.0f, 450.0f);//b2,265
+	pot[1].Init_Pot(600.0f, 450.0f); //b1,450
+	pot[2].Init_Pot(800.0f, 450.0f); //b3,110
+	pot[3].Init_Pot(1000.0f, 450.0f);
+}
+// init vị trị chậu tầng 2
+void initSkyB2()
+{
+	for(int i = 4; i<8;i++)
+	{
+		pot[i].Load_Image("Images/Arrow.png");
+	}
+	pot[4].Init_Pot(400.0f, 265.0f);//b2,265
+	pot[5].Init_Pot(600.0f, 265.0f); //b1,450
+	pot[6].Init_Pot(800.0f, 265.0f); //b3,110
+	pot[7].Init_Pot(1000.0f, 265.0f);
+}
+// init vị trị chậu tầng 3
+void initSkyB3()
+{
+	for(int i = 8; i<12;i++)
+	{
+		pot[i].Load_Image("Images/Arrow.png");
+	}
+	pot[8].Init_Pot(400.0f, 110.0f);//b2,265
+	pot[9].Init_Pot(600.0f, 110.0f); //b1,450
+	pot[10].Init_Pot(800.0f, 110.0f); //b3,110
+	pot[11].Init_Pot(1000.0f, 110.0f);
+}
+//// intit chậu vị trí ở phần container
+void initPositiveContainerPot()
+{
+	Container[0].Load_Image("Images/Pot1.png");
+	Container[1].Load_Image("Images/Pot2.png");
+	Container[2].Load_Image("Images/Pot3.png");
+}
+// inti trí ở phần container
+void initPositiveContainer()
+{
+
+	Container[0].Load_Image("Images/Pot1.png");
+	Container[1].Load_Image("Images/Pot2.png");
+	Container[2].Load_Image("Images/Pot3.png");
+
+	Container[0].Init_LoadImg(600.0f, 610.0f,60,60);
+	Container[1].Init_LoadImg(750.0f, 610.0f,60,60);
+	Container[2].Init_LoadImg(900.0f, 610.0f,60,60);
+}
+// intit hoa vị trí ở phần container
+void initPositiveContainerFlower()
+{
+
+	Container[0].Load_Image("Images/Seed-A.png");
+	Container[1].Load_Image("Images/Seed-B.png");
+	Container[2].Load_Image("Images/Seed-C.png");
+}
+///////////display
+//display vị trí tầng 1
+void displaySkyB1()
+{
+	for(int i = 0 ; i <4; i++)
+	{
+		pot[i].Draw();
+	}
+}
+//display vị trí tầng 2
+void displaySkyB2()
+{
+	for(int i = 4 ; i <8; i++)
+	{
+		pot[i].Draw();
+	}
+}
+//display vị trí tầng 3
+void displaySkyB3()
+{
+	for(int i = 8 ; i <12; i++)
+	{
+		pot[i].Draw();
+	}
+}
+// display vị trí ở phần container
+void displayPositiveContainer()
+{
+	for(int i = 0 ; i <3; i++)
+	{
+		Container[i].Draw();
+	}
+}
 // display của shop hoa
 // display các vật phẩm trong shop // đặt trong hàm display game
 void displayStore()
@@ -351,6 +475,7 @@ void display_RainCloud()
 	Rain[1].Draw();
 
 }
+
 void display() {
   glutSetWindowTitle("SKY GARDEN");
   glClear(GL_COLOR_BUFFER_BIT);
@@ -368,8 +493,14 @@ void display() {
   Draw_Rect( & rct_btn_exit);
   //Click gọi lại hàm exit
   glutMouseFunc(clickMenuIntro);
+  
   //__End__
   glutSwapBuffers();
+}
+//loadContainer
+void loadContainer(){
+  Map_Texture( & img_container);
+  Draw_Rect( & rct_container);
 }
 //Vẽ btn back
 void btnBack() {
@@ -392,6 +523,7 @@ void btn_screenNewGame() {
   Map_Texture( & img_mission);
   Draw_Rect( & rct_mission);
 }
+bool choosePot = false; // hiển thị thanh container
 //màn hình newgame
 void screenNewGame() {
   glutSetWindowTitle("SKY GRADEN");
@@ -410,8 +542,38 @@ void screenNewGame() {
   //load btn
   btn_screenNewGame();
   display_RainCloud();
+  //load container
+  loadContainer();
+  //display vị trí chậu tầng 1
+  if(floorSky >=1)
+  {
+	displaySkyB1();
+  }
+  if(floorSky >= 2)
+  {
+	  //Mây lock tầng 2
+	filter_lock2.Bottom = 0;
+	filter_lock2.Top = 0;
+	filter_lock2.Left = 0;
+	filter_lock2.Right = 0;
+	displaySkyB2();
+  }
+  if(floorSky >=3 )
+  {
+	  //May lock tầng 1
+	  filter_lock1.Bottom = 0;
+	  filter_lock1.Top = 0;
+	  filter_lock1.Left = 0;
+	  filter_lock1.Right = 0;
+	displaySkyB3();
+  }
+  //display các vị trí dưới thanh gỗ
+  if(choosePot)
+  {
+	displayPositiveContainer();
+  }
   //back to display
-  glutMouseFunc(clickBack);
+  glutMouseFunc(clickMain);
 
   //__End__
   glutSwapBuffers();
@@ -530,6 +692,504 @@ void clickBack(int button, int state, int x, int y) {
   }
   glutPostRedisplay();
 }
+//click new game game
+void clickMain(int button, int state, int x, int y) {
+  //back về display
+  if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 20 && x <= 70 && y >= 20 && y <= 95 && screen == 0) {
+    cout << "Back to display\n";
+    glutDisplayFunc(display);
+  }
+  //back về screen Newgame
+  if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 20 && x <= 70 && y >= 20 && y <= 95 && screen == 1) {
+    cout << "Back to NewGame\n";
+    glutDisplayFunc(screenNewGame);
+  }
+  //go to shop
+  if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 1170 && x <= 81 + 1170 && y >= 100 && y <= 76 + 100 && screen == 0) {
+    cout << "Qua Shop thanh cong\n";
+    glutDisplayFunc(screenShop);
+  }
+  // click tưới cây
+  if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 30 && x <= 77+30 && y >= 100  && y <= 71+100 && screen == 0) {
+    cout << "Tuoi Cay\n";
+	Rain[0].Key_Down();
+	Rain[1].Key_Down();
+    glutDisplayFunc(screenNewGame);
+  }
+  //các click xử lý chậu
+ //   //vị trí chậu 1 tầng 1
+ // if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+ // {
+	//  check = true;
+	//  cout <<"Click vao vi tri 1 tang 1"<<endl;
+	//for(int i = 0; i<4;i++)
+	//{	
+	//	pot[i].Load_Image("Images/Pot1.png");
+	//}
+	//
+ // }
+  // ============= Tầng 1
+  //vị trí chậu 1 tầng 1
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[0].x && x <= locationPot[0].y && y >= locationPot[0].c && y <= locationPot[0].z )
+  {
+	cout <<"Click vao vi tri 1 tang 1"<<endl;
+	// kiểm soát vị trí được chọn
+	pot[0].choose = true;
+	for(int i = 1; i < 12 ;++i)
+	{
+		pot[i].choose = false;
+	}
+	// kết thúc kiểm soát vị trí được chọn
+	// Kiểm tra có chậu chưa
+	if(pot[0].already == false)
+	{
+		choosePot = true;
+		initPositiveContainerPot();
+	}
+	if(pot[0].already == true)
+	{
+		initPositiveContainerFlower();
+		pot[0].chooseSeed = true;
+	}
+	// kết thúc Kiểm tra có chậu chưa
+		glutPostRedisplay();
+  }
+    //vị trí chậu 2 tầng 1
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[1].x && x <= locationPot[1].y && y >= locationPot[1].c && y <= locationPot[1].z )
+  {
+	cout <<"Click vao vi tri 2 tang 1"<<endl;
+	// kiểm soát vị trí được chọn
+	for(int i = 0; i < 12 ;++i)
+	{
+		if(i == 1)
+		{
+			pot[i].choose = true;
+		}
+		else
+		{
+			pot[i].choose = false;
+		}
+		
+	}
+	// kết thúc kiểm soát vị trí được chọn
+	// Kiểm tra có chậu chưa
+	if(pot[1].already == false)
+	{
+		choosePot = true;
+		initPositiveContainerPot();
+	}
+	if(pot[1].already == true)
+	{
+		// có rồi thì hiện thị hoa
+		initPositiveContainerFlower();
+		pot[1].chooseSeed = true;
+	}
+	// kết thúc Kiểm tra có chậu chưa
+		glutPostRedisplay();
+  }
+    //vị trí chậu 3
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[2].x && x <= locationPot[2].y && y >= locationPot[2].c && y <= locationPot[2].z )
+  {
+	cout <<"Click vao vi tri 3 tang 1"<<endl;
+	// kiểm soát vị trí được chọn
+	for(int i = 0; i < 12 ;++i)
+	{
+		if(i == 2)
+		{
+			pot[i].choose = true;
+		}
+		else
+		{
+			pot[i].choose = false;
+		}
+		
+	}
+	// kết thúc kiểm soát vị trí được chọn
+	// Kiểm tra có chậu chưa
+	if(pot[2].already == false)
+	{
+		choosePot = true;
+		initPositiveContainerPot();
+	}
+	else
+	{
+		// có rồi thì hiện thị hoa
+		initPositiveContainerFlower();
+		pot[2].chooseSeed = true;
+	}
+	// kết thúc Kiểm tra có chậu chưa
+		glutPostRedisplay();
+  }
+    //vị trí chậu 4
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[3].x && x <= locationPot[3].y && y >= locationPot[3].c && y <= locationPot[3].z )
+  {
+	cout <<"Click vao vi tri 4 tang 1"<<endl;
+	// kiểm soát vị trí được chọn
+	// kiểm soát vị trí được chọn
+	for(int i = 0; i < 12 ;++i)
+	{
+		if(i == 3)
+		{
+			pot[i].choose = true;
+		}
+		else
+		{
+			pot[i].choose = false;
+		}
+		
+	}
+	// kết thúc kiểm soát vị trí được chọn
+	// Kiểm tra có chậu chưa
+	if(pot[3].already == false)
+	{
+		choosePot = true;
+		initPositiveContainerPot();
+	}
+	else
+	{
+		// có rồi thì hiện thị hoa
+		initPositiveContainerFlower();
+		pot[3].chooseSeed = true;
+	}
+	// kết thúc Kiểm tra có chậu chưa
+		glutPostRedisplay();
+  }
+  // ==================== Tầng 2 =========
+  //vị trí chậu 1 tầng 2
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[4].x && x <= locationPot[4].y && y >= locationPot[4].c && y <= locationPot[4].z && floorSky >=2)
+  {
+	cout <<"Click vao vi tri 1 tang 2"<<endl;
+	// kiểm soát vị trí được chọn
+	for(int i = 0; i < 12 ;++i)
+	{
+		if(i == 4)
+		{
+			pot[i].choose = true;
+		}
+		else
+		{
+			pot[i].choose = false;
+		}
+		
+	}
+	// kết thúc kiểm soát vị trí được chọn
+	// Kiểm tra có chậu chưa
+	if(pot[4].already == false)
+	{
+		choosePot = true;
+		initPositiveContainerPot();
+	}
+	if(pot[4].already == true)
+	{
+		initPositiveContainerFlower();
+		pot[4].chooseSeed = true;
+	}
+	// kết thúc Kiểm tra có chậu chưa
+		glutPostRedisplay();
+  }
+    //vị trí chậu 2 tầng 2
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[5].x && x <= locationPot[5].y && y >= locationPot[5].c && y <= locationPot[5].z && floorSky >=2 )
+  {
+	cout <<"Click vao vi tri 2 tang 2"<<endl;
+	// kiểm soát vị trí được chọn
+	for(int i = 0; i < 12 ;++i)
+	{
+		if(i == 5)
+		{
+			pot[i].choose = true;
+		}
+		else
+		{
+			pot[i].choose = false;
+		}
+		
+	}
+	// kết thúc kiểm soát vị trí được chọn
+	// Kiểm tra có chậu chưa
+	if(pot[5].already == false)
+	{
+		choosePot = true;
+		initPositiveContainerPot();
+	}
+	if(pot[5].already == true)
+	{
+		initPositiveContainerFlower();
+		pot[5].chooseSeed = true;
+	}
+	// kết thúc Kiểm tra có chậu chưa
+		glutPostRedisplay();
+  }
+    //vị trí chậu 3 tầng 2
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[6].x && x <= locationPot[6].y && y >= locationPot[6].c && y <= locationPot[6].z  && floorSky >=2 )
+  {
+	cout <<"Click vao vi tri 3 tang 2"<<endl;
+	// kiểm soát vị trí được chọn
+	for(int i = 0; i < 12 ;++i)
+	{
+		if(i == 6)
+		{
+			pot[i].choose = true;
+		}
+		else
+		{
+			pot[i].choose = false;
+		}
+		
+	}
+	// kết thúc kiểm soát vị trí được chọn
+	// Kiểm tra có chậu chưa
+	if(pot[6].already == false)
+	{
+		choosePot = true;
+		initPositiveContainerPot();
+	}
+	if(pot[6].already == true)
+	{
+		initPositiveContainerFlower();
+		pot[6].chooseSeed = true;
+	}
+	// kết thúc Kiểm tra có chậu chưa
+		glutPostRedisplay();
+  }
+    //vị trí chậu 4 tầng 2
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[7].x && x <= locationPot[7].y && y >= locationPot[7].c && y <= locationPot[7].z  && floorSky >=2 )
+  {
+	cout <<"Click vao vi tri 4 tang 2"<<endl;
+	// kiểm soát vị trí được chọn
+	for(int i = 0; i < 12 ;++i)
+	{
+		if(i == 7)
+		{
+			pot[i].choose = true;
+		}
+		else
+		{
+			pot[i].choose = false;
+		}
+		
+	}
+	// kết thúc kiểm soát vị trí được chọn
+	// Kiểm tra có chậu chưa
+	if(pot[7].already == false)
+	{
+		choosePot = true;
+		initPositiveContainerPot();
+	}
+	if(pot[7].already == true)
+	{
+		initPositiveContainerFlower();
+		pot[7].chooseSeed = true;
+	}
+	// kết thúc Kiểm tra có chậu chưa
+		glutPostRedisplay();
+  }
+  //====================== Tầng 3
+  //vị trí chậu 1 tầng 3
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[8].x && x <= locationPot[8].y && y >= locationPot[8].c && y <= locationPot[8].z  && floorSky >= 3)
+  {
+	cout <<"Click vao vi tri 1 tang 3"<<endl;
+	// kiểm soát vị trí được chọn
+	for(int i = 0; i < 12 ;++i)
+	{
+		if(i == 8)
+		{
+			pot[i].choose = true;
+		}
+		else
+		{
+			pot[i].choose = false;
+		}
+		
+	}
+	// kết thúc kiểm soát vị trí được chọn
+	// Kiểm tra có chậu chưa
+	if(pot[8].already == false)
+	{
+		choosePot = true;
+		initPositiveContainerPot();
+	}
+	if(pot[8].already == true)
+	{
+		initPositiveContainerFlower();
+		pot[8].chooseSeed = true;
+	}
+	// kết thúc Kiểm tra có chậu chưa
+		glutPostRedisplay();
+  }
+    //vị trí chậu 2 tầng 3
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[9].x && x <= locationPot[9].y && y >= locationPot[9].c && y <= locationPot[9].z && floorSky >= 3)
+  {
+	cout <<"Click vao vi tri 2 tang 3"<<endl;
+	// kiểm soát vị trí được chọn
+	for(int i = 0; i < 12 ;++i)
+	{
+		if(i == 9)
+		{
+			pot[i].choose = true;
+		}
+		else
+		{
+			pot[i].choose = false;
+		}
+		
+	}
+	// kết thúc kiểm soát vị trí được chọn
+	// Kiểm tra có chậu chưa
+	if(pot[9].already == false)
+	{
+		choosePot = true;
+		initPositiveContainerPot();
+	}
+	if(pot[9].already == true)
+	{
+		// có rồi thì hiện thị hoa
+		initPositiveContainerFlower();
+		pot[9].chooseSeed = true;
+	}
+	// kết thúc Kiểm tra có chậu chưa
+		glutPostRedisplay();
+  }
+    //vị trí chậu 3 tầng 3
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[10].x && x <= locationPot[10].y && y >= locationPot[10].c && y <= locationPot[10].z&& floorSky >= 3 )
+  {
+	cout <<"Click vao vi tri 3 tang 3"<<endl;
+		// kiểm soát vị trí được chọn
+	for(int i = 0; i < 12 ;++i)
+	{
+		if(i == 10)
+		{
+			pot[i].choose = true;
+		}
+		else
+		{
+			pot[i].choose = false;
+		}
+		
+	}
+	// kết thúc kiểm soát vị trí được chọn
+	// Kiểm tra có chậu chưa
+	if(pot[10].already == false)
+	{
+		choosePot = true;
+		initPositiveContainerPot();
+	}
+	if(pot[10].already == true)
+	{
+		// có rồi thì hiện thị hoa
+		initPositiveContainerFlower();
+		pot[10].chooseSeed = true;
+	}
+	// kết thúc Kiểm tra có chậu chưa
+		glutPostRedisplay();
+	
+  }
+    //vị trí chậu 4 tầng 3
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[11].x && x <= locationPot[11].y && y >= locationPot[11].c && y <= locationPot[11].z && floorSky >= 3 )
+  {
+	cout <<"Click vao vi tri 4 tang 3"<<endl;
+	// kiểm soát vị trí được chọn
+	for(int i = 0; i < 12 ;++i)
+	{
+		if(i == 11)
+		{
+			pot[i].choose = true;
+		}
+		else
+		{
+			pot[i].choose = false;
+		}
+		
+	}
+	// kết thúc kiểm soát vị trí được chọn
+	// Kiểm tra có chậu chưa
+	if(pot[11].already == false)
+	{
+		choosePot = true;
+		initPositiveContainerPot();
+	}
+	else
+	{
+		// có rồi thì hiện thị hoa
+		initPositiveContainerFlower();
+		pot[11].chooseSeed = true;
+	}
+	// kết thúc Kiểm tra có chậu chưa
+		glutPostRedisplay();
+  }
+  //========= chọn loại chậu, loại hoa container
+  //vị trí container 1 
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 580 && x <= 580 + 60 && y >= 610 && y <= 610 + 60 )
+  {  
+	cout <<"Click vao vi tri container 1 "<<endl;
+	// lựa chọn chậu
+	for(int i = 0; i < 12 ; ++i)
+	{
+		if(pot[i].choose == true && pot[i].already == false)
+		{
+			pot[i].Load_Image(choosePots(1));
+			pot[i].already = true;
+		}
+	}
+	// Lựa chọn Hoa
+	for(int i = 0; i < 12 ; ++i)
+	{
+		if(pot[i].choose == true && pot[i].already == true && pot[i].chooseSeed == true)
+		{
+			pot[i].Load_Image(chooseFlower(2));//ảnh hoa
+
+		}
+	}
+	glutPostRedisplay();
+  }
+    //vị trí container 2 
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 730 && x <= 730 + 60 &&  y >= 610 && y <= 610 + 60 )
+  {
+	cout <<"Click vao vi tri container 2 "<<endl;
+	// lựa chọn chậu
+	for(int i = 0; i < 12 ; ++i)
+	{
+		if(pot[i].choose == true && pot[i].already == false)
+		{
+			pot[i].Load_Image(choosePots(2));
+			pot[i].already = true;
+		}
+	}
+	// Lựa chọn Hoa
+	for(int i = 0; i < 12 ; ++i)
+	{
+		if(pot[i].choose == true && pot[i].already == true && pot[i].chooseSeed == true)
+		{
+			pot[i].Load_Image(chooseFlower(4));
+		}
+	}
+	glutPostRedisplay();
+  }
+    //vị trí container 3
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 880 && x <= 880 + 60 &&  y >= 610 && y <= 610 + 60 )
+  {
+	cout <<"Click vao vi tri container 3 "<<endl;
+	// lựa chọn chậu
+	for(int i = 0; i < 12 ; ++i)
+	{
+		if(pot[i].choose == true && pot[i].already == false)
+		{
+			pot[i].Load_Image(choosePots(3));
+			pot[i].already = true;
+		}
+	}
+	// Lựa chọn Hoa
+	for(int i = 0; i < 12 ; ++i)
+	{
+		if(pot[i].choose == true && pot[i].already == true && pot[i].chooseSeed == true)
+		{
+			pot[i].Load_Image(chooseFlower(6));
+		}
+	}
+	glutPostRedisplay();
+  }
+  glutPostRedisplay();
+}
+
 /// Các hàm xử lý bên shop
 // số lượng vật phẩm
 void numSL()
@@ -658,9 +1318,7 @@ void mouseClickInShop(int button , int state, int x, int y)
 		Pot_Store_Ghost[0].keyDow();
 		Class_Pot_Seed = 1;
 		numSLVPham.Update_Num(slPot[0].soLuong);
-		//cout << Class_Pot;
-	
-		
+		//cout << Class_Pot;		
 	}
 	// chậu2
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 410 && x <= 480 && y >= 170  && y <= 240)
@@ -731,7 +1389,6 @@ void mouseClickInShop(int button , int state, int x, int y)
 	// btn mua vật phẩm
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 990 && x <= 1180 && y >= 610 && y <= 680)
 	{
-
 		buyPot();
 		cout <<"============"<<endl;
 		cout << "so tien con lai la: "<< money <<endl;
@@ -743,14 +1400,13 @@ void mouseClickInShop(int button , int state, int x, int y)
 		cout <<"============"<<endl;
 		for(int i =0 ; i < 3 ; i++)
 		{
-
 			cout <<" Hoa loai  "<< i<<":" <<slSeed[i].soLuong <<endl;
 		}
-		numMoney.Update_Num(money); // số tiền
-		
+		numMoney.Update_Num(money); // số tiền	
 	}
 	glutPostRedisplay();
 }
+
 /// Kết thúc phần xử lý trong shop
 // TImer 
 void Timer_CloudRain()
@@ -766,10 +1422,74 @@ void Timer_CloudRain()
 void Timer(int value)
 {
 	Timer_CloudRain();
-	//	Rain[0].Update();
-	//Rain[1].Update();
-	//for(int i =0; i < 3; i++)
-	//	Cloud[i].Update();
-	//glutPostRedisplay();
 	glutTimerFunc(INTERVAL,Timer, 0);
+}
+
+// Lựa chọn loại chậu
+char* choosePots(int i)
+{
+	char* temp="";
+	switch(i)
+	{
+		case 1:
+		{
+			temp = "Images/Pot1.png";
+			break;
+		}
+		case 2:
+		{
+			temp = "Images/Pot2.png";
+			break;
+		}
+		case 3:
+		{
+			temp = "Images/Pot3.png";
+			break;
+		}
+	}
+	return temp;
+}
+// Lựa chọn loại hoa
+char* chooseFlower(int i)
+{
+	char* temp="";
+	switch(i)
+	{
+		case 0:
+		{
+			temp = "Images/Germ.png"; // giai đoạn nãy mầm
+			break;
+		}
+		case 1:
+		{
+			temp = "Images/Fl-A3.png"; // giai đoạn 2 của loại hoa 1
+			break;
+		}
+		case 2:
+		{
+			temp = "Images/Fl-A4.png"; // giai đoạn trưởng thành của loại 1
+			break;
+		}
+		case 3:
+		{
+			temp = "Images/Fl-B4.png"; // giai đoạn trưởng thành của loại 2
+			break;
+		}
+		case 4:
+		{
+			temp = "Images/Fl-B4.png"; // giai đoạn trưởng thành của loại 2
+			break;
+		}
+		case 5:
+		{
+			temp = "Images/Fl-C4.png";// giai đoạn 2 của loại hoa 3
+			break;
+		}
+		case 6:
+		{
+			temp = "Images/Fl-C3.png";// giai đoạn trưởng thành của loại 3
+			break;
+		}
+	}
+	return temp;
 }

@@ -30,6 +30,9 @@
     <ClInclude Include="Rain_Cloud.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="loadimage.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sky_garden_main.cpp">
