@@ -71,8 +71,8 @@ class c_Cloud {
 	}
 	void Update() {
 		x -= 0.8f;
-		if (x < -120.0f)
-			x += 1680.0f;
+		if (x < -130.0f)
+			x += 1880.0f;
 		Update_Rect();
 	}
 };
