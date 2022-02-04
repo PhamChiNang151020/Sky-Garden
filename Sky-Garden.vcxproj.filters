@@ -35,7 +35,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="sky_garden_main3.cpp">
+    <ClCompile Include="sky_garden_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

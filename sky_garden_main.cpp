@@ -158,7 +158,9 @@ c_loadimage Container[3];
 //============Kết thúc khai báo thanh gỗ
 //=============Khai báo cho các giai đoạn phát triển của hoa
 c_flower flower[12]; // cho 12 vị trí hoa
-int floorSky = 3; // tầng 1 2 3
+int floorSky = 1; // tầng 1 2 3
+int soLanTuoiCay = 0;  // 3 lần tưới cây sẽ mở tầng 1
+int soLanThuHoach = 0; // 4 lần thu hoạch sẽ mở tầng 3
 //============Kết thúc khai báo cho các giai đoạn phát triển của hoa
 //Khai báo biến màn hình
 int screen;
@@ -783,11 +785,16 @@ void clickBack(int button, int state, int x, int y) {
 void clickMain(int button, int state, int x, int y) {
   clickBack(button, state,  x, y);
   // click tưới cây
-  if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 30 && x <= 77+30 && y >= 100  && y <= 71+100 && screen == 0 && Rain[1].x < -140) {
-    cout << "Tuoi Cay\n";
+  if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= 30 && x <= 77+30 && y >= 100  && y <= 71+100 && screen == 0 && Rain[1].x < -140) 
+  {
+	cout << "Tuoi Cay\n";
 	Rain[0].Key_Down();
 	Rain[1].Key_Down();
+	soLanTuoiCay += 1;
+	cout <<"So Lan tuoi cay :" <<soLanTuoiCay << endl;
   }
+
+
   // ============= Tầng 1
   //vị trí chậu 1 tầng 1
 	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && x >= locationPot[0].x && x <= locationPot[0].y && y >= locationPot[0].c && y <= locationPot[0].z )
@@ -1505,6 +1512,7 @@ void clickMain(int button, int state, int x, int y) {
 			{
 				money += 400;
 			}
+			soLanThuHoach += 1;
 			cout <<"Thu hoach thanh cong"<<endl;
 		}
 		glutPostRedisplay();
@@ -1531,6 +1539,7 @@ void clickMain(int button, int state, int x, int y) {
 			{
 				money += 400;
 			}
+			soLanThuHoach += 1;
 			cout <<"Thu hoach thanh cong"<<endl;
 		}
 			glutPostRedisplay();
@@ -1557,6 +1566,7 @@ void clickMain(int button, int state, int x, int y) {
 			{
 				money += 400;
 			}
+			soLanThuHoach += 1;
 			cout <<"Thu hoach thanh cong"<<endl;
 		}
 			glutPostRedisplay();
@@ -1583,6 +1593,7 @@ void clickMain(int button, int state, int x, int y) {
 			{
 				money += 400;
 			}
+			soLanThuHoach += 1;
 			cout <<"Thu hoach thanh cong"<<endl;
 		}
 		glutPostRedisplay();
@@ -1610,6 +1621,7 @@ void clickMain(int button, int state, int x, int y) {
 			{
 				money += 400;
 			}
+			soLanThuHoach += 1;
 			cout <<"Thu hoach thanh cong"<<endl;
 		}
 			glutPostRedisplay();
@@ -1636,6 +1648,7 @@ void clickMain(int button, int state, int x, int y) {
 			{
 				money += 400;
 			}
+			soLanThuHoach += 1;
 			cout <<"Thu hoach thanh cong"<<endl;
 		}
 			glutPostRedisplay();
@@ -1662,6 +1675,7 @@ void clickMain(int button, int state, int x, int y) {
 			{
 				money += 400;
 			}
+			soLanThuHoach += 1;
 			cout <<"Thu hoach thanh cong"<<endl;
 		}
 			glutPostRedisplay();
@@ -1688,6 +1702,7 @@ void clickMain(int button, int state, int x, int y) {
 			{
 				money += 400;
 			}
+			soLanThuHoach += 1;
 			cout <<"Thu hoach thanh cong"<<endl;
 		}
 		glutPostRedisplay();
@@ -1799,6 +1814,16 @@ void clickMain(int button, int state, int x, int y) {
 		glutPostRedisplay();
 	}
 	/////// ================= kết thúc Thu hoạch
+	if(soLanTuoiCay == 3)
+	{
+	  floorSky = 2;
+	  glutPostRedisplay();
+	}
+	if(soLanThuHoach >= 4 && soLanTuoiCay >= 3)
+	{
+		floorSky = 3;
+		glutPostRedisplay();
+	}
   glutPostRedisplay();
 }
 
