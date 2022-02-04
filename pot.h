@@ -3,7 +3,8 @@ class c_pot {
    public:
 	bool choose;// vị trí đang được chọn,// true đang chọn , false là chưa
 	bool already ; // true: đã có chậu ở vị trí này; false là chưa
-	bool chooseSeed;
+	bool chooseSeed; // kiểm soát việc hiển thị hoa
+	int typePot; // 1 loại 1, 2 loại 2, 3 loại 3
     Image Img_Save;
     void Load_Image(char* a) {
 		Load_Texture_Swap(&Img_Save, a);
@@ -68,6 +69,12 @@ class c_pot {
 		//y = 430;
 		//Update_Rect_x();
 		//Update_Rect_y();
+	}
+	void Update_Ghost() {
+		Rct.Left = 0;
+		Rct.Right = 0;
+		Rct.Top = 0 ;
+		Rct.Bottom =0;
 	}
 	
 };
